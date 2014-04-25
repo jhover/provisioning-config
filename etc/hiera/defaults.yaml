@@ -1,0 +1,6 @@
+---
+classes:
+  - os
+
+---
+os::motd: "This is a hiera defaults MOTD.\n"

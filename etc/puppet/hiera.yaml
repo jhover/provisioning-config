@@ -1,0 +1,16 @@
+#
+# Placed in /etc/puppet because in certain contexts it cannot be specified. 
+#
+
+---
+:backends:
+  - yaml
+
+:yaml:
+  :datadir: /etc/hiera
+
+:hierarchy:
+   - defaults
+   - local
+
+# :merge_behavior: deeper

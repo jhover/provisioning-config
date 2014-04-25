@@ -1,0 +1,21 @@
+#
+# For setup testing convenience. 
+# These should be created by imagefactory from baseconfig.tdl
+#
+
+[puppet-products]
+name=puppetlabs-products
+baseurl=http://yum.puppetlabs.com/el/6/products/$basearch
+skip_if_unavailable=1
+enabled=1
+sslverify=0
+gpgcheck=0
+
+
+[puppet-deps]
+name=puppetlabs-products
+baseurl=http://yum.puppetlabs.com/el/6/dependencies/$basearch
+skip_if_unavailable=1
+enabled=1
+sslverify=0
+gpgcheck=0
