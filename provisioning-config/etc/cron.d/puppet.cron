@@ -1,0 +1,3 @@
+# Run puppet every hour and on reboots. 
+@reboot /usr/sbin/runpuppet.sh
+7 * * * * root /usr/sbin/runpuppet.sh
