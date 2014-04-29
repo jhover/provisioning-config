@@ -1,7 +1,6 @@
 #
 # Placed in /etc/puppet because in certain contexts it cannot be specified. 
 #
-
 ---
 :backends:
   - yaml
@@ -13,4 +12,3 @@
    - defaults
    - local
 
-# :merge_behavior: deeper
