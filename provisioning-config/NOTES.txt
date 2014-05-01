@@ -1,0 +1,7 @@
+Modules?
+===============
+
+puppet module install domcleal/augeasproviders
+puppet module install puppetlabs-stdlib
+puppet module install puppet-ssh
+puppet module install erwbgy-ssh

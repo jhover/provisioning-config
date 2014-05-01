@@ -1,8 +1,12 @@
 #!/bin/bash -l
 PUPPETLOG=/var/log/puppet/runpuppet.log
 DATE=`date`
+echo "[$DATE] Checking for new config..."
+getpuppetconfig 2>&1 >>$PUPPETLOG
+DATE=`date`
 echo "[$DATE] Running Puppet..." >> $PUPPETLOG
 cd /etc/puppet
 puppet apply --verbose --modulepath ./modules manifests/site.pp 2>&1 >>$PUPPETLOG
+DATE=`date`
 echo "[$DATE] Done running Puppet..." >> $PUPPETLOG
 
