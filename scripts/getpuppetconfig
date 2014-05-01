@@ -1,0 +1,9 @@
+#!/bin/bash
+#
+# In EC2 context, ensures that if a metadata server exists, then file is downloaded to
+# /etc/hiera/local.yaml
+# 
+# Could be expanded to support other methods...
+#
+UDBASEURL=/usr/bin/curl -s http://169.254.169.254/latest/meta-data/public-hostname
+CURL_CMD="/usr/bin/curl"

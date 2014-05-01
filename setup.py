@@ -25,9 +25,10 @@ setup(
           'Programming Language :: Python',
           'Topic :: System Administration :: Management',
     ],
-    scripts=[ 'bin/retrieve-userdata',
+    scripts=[ 'scripts/runpuppet',
+              'scripts/getuserdata'
              ],
-    data_files=[ ('/etc/puppet/modules/pconfig', 
+    data_files=[ ('/etc/puppet/modules/', 
                      ['README.txt', 
                      'LGPL.txt', 
                      ] 

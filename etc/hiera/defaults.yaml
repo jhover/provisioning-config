@@ -1,6 +1,10 @@
 ---
 classes:
   - os
+  - ssh
 
 ---
 os::motd: "This is a hiera defaults MOTD.\n"
+
+---
+
