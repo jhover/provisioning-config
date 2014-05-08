@@ -1,0 +1,13 @@
+
+*******************************************************************************
+*                                                                             *
+*  Welcome to AIX Version <%= @kernelmajversion.sub(/([0-9])([0-9]).*/, '\1.\2') %>!                                                *
+*                                                                             *
+*******************************************************************************
+
+FQDN:      <%= fqdn %> (<%= ipaddress %>)
+<% if has_variable?("processor0") then -%>
+Processor: <%= processorcount %>x <%= processor0 %>
+<% end -%>
+Kernel:    <%= kernelrelease %>
+

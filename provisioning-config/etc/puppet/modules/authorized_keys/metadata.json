@@ -1,0 +1,31 @@
+{
+  "author": "Virgil Chereches",
+  "project_page": "UNKNOWN",
+  "name": "brutus777-authorized_keys",
+  "source": "UNKNOWN",
+  "checksums": {
+    "LICENSE": "439bbca2f8dd1da999b5c8814f55a8f0",
+    "README.md": "b1aac42568cc4cea3c051368d4383a57",
+    "manifests/validatekeys.pp": "0cd59733a525885ff11c308d1aaee36f",
+    "templates/authorized_keys.erb": "840db0b988469801735f106e3997808f",
+    "Modulefile": "35507d4b8ef2e082bf395dbbffec2462",
+    "manifests/validateroles.pp": "6f9be32f8d459a54152981f43c60ebe3",
+    "manifests/init.pp": "2b2687522045d56bb3143f2755971b49",
+    "manifests/authkeyfile.pp": "21d4710acbc5d5cb9505472b76365783",
+    "manifests/validate.pp": "bf237e1cca8bc66ed6a7c9d3811b9c24",
+    "manifests/parsevalidate_array.pp": "f4d05fd52acb609d593776ef292c6343"
+  },
+  "types": [
+
+  ],
+  "version": "0.0.2",
+  "summary": "UNKNOWN",
+  "description": "Manage SSH authorized_keys via puppet",
+  "license": "Apache License, Version 2.0",
+  "dependencies": [
+    {
+      "version_requirement": ">= 2.2.1",
+      "name": "puppetlabs/stdlib"
+    }
+  ]
+}
