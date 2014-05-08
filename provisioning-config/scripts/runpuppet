@@ -14,7 +14,7 @@ import urllib
 
 # Globals
 
-logfile="/home/jhover/runpuppet.log"
+logfile="/var/log/runpuppet.log"
 log = None
 
 def setuplogging():
