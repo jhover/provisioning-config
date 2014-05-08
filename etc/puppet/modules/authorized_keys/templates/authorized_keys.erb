@@ -1,0 +1,18 @@
+<% keyarray = [] -%>
+<% @roles.each do |role| -%>
+<%   if scope.lookupvar('authorized_keys::rolesauth').has_key?(role) -%>
+<%     scope.lookupvar('authorized_keys::rolesauth')[role].each do |sshkey| -%>
+<%       if not(keyarray.include?(sshkey)) -%>
+<%         keyarray.push(sshkey) -%>
+<%         if scope.lookupvar('authorized_keys::authorized_keys').has_key?(sshkey) -%>
+<%           sshkeyhash = scope.lookupvar('authorized_keys::authorized_keys')[sshkey] -%>
+<%           output="%s %s %s\n" % [ sshkeyhash["type"],sshkeyhash["key"],sshkey ] -%>
+<%           if sshkeyhash.has_key?("options") -%>
+<%             output = sshkeyhash["options"]+" "+output -%>
+<%           end -%>
+<%=          output -%>
+<%         end -%>
+<%       end -%>
+<%     end -%>
+<%   end -%>
+<% end -%>

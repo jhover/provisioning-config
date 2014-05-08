@@ -1,0 +1,11 @@
+name    'boogy-motd'
+version '0.0.2'
+source 'https://github.com/boogy/puppet-module-motd'
+author 'boogy'
+license 'Apache License, Version 2.0'
+summary 'Motd Module'
+description 'Configure message of the day file'
+project_page 'https://github.com/boogy/puppet-module-motd'
+
+## Add dependencies, if any:
+dependency 'ripienaar/concat', '>= 0.2.0'

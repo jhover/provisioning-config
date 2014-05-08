@@ -1,0 +1,34 @@
+{
+  "summary": "Motd Module",
+  "license": "Apache License, Version 2.0",
+  "author": "boogy",
+  "types": [
+
+  ],
+  "source": "https://github.com/boogy/puppet-module-motd",
+  "description": "Configure message of the day file",
+  "project_page": "https://github.com/boogy/puppet-module-motd",
+  "version": "0.0.2",
+  "checksums": {
+    "manifests/mapfile.pp": "e31c7b2a329046a9d9543dc2461acc99",
+    "templates/motd.sol.erb": "9fd4530ebaf83ebcfacf92761d6f1648",
+    "Modulefile": "4d2b334a8e3d6fcdabc554f8a1a2a14f",
+    "manifests/params.pp": "1e05dc67c478ac39a7c91f924bac39a5",
+    "tests/init.pp": "702aaffb096424929b54f4cffdc65098",
+    "manifests/message.pp": "d3beecb2441a03bd14a1ba0b41a40447",
+    "spec/spec_helper.rb": "a55d1e6483344f8ec6963fcb2c220372",
+    "manifests/init.pp": "2e116cd165a5053139f0baf68d59d802",
+    "templates/motd.erb": "cc609836c19ace8d205a479d2fbc5187",
+    "templates/motd.aix.erb": "a0bcf1ce257897b24eba7297e4a40d91",
+    "LICENSE": "6ea597734a8831808b4f6386ec536317",
+    "README.md": "5d2a68a93665c161629ea0cdf7926eef",
+    "templates/motd.rhel.erb": "cc609836c19ace8d205a479d2fbc5187"
+  },
+  "dependencies": [
+    {
+      "version_requirement": ">= 0.2.0",
+      "name": "ripienaar/concat"
+    }
+  ],
+  "name": "boogy-motd"
+}

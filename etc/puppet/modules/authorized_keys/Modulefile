@@ -1,0 +1,9 @@
+name    'brutus777-authorized_keys'
+version '0.0.2'
+author 'Virgil Chereches'
+license 'Apache License, Version 2.0'
+summary 'UNKNOWN'
+description 'Manage SSH authorized_keys via puppet'
+
+## Add dependencies, if any:
+dependency 'puppetlabs/stdlib', '>= 2.2.1'
