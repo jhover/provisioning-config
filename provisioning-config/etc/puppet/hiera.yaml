@@ -8,6 +8,9 @@
 :yaml:
   :datadir: /etc/hiera
 
+:merge_behavior:
+  - deeper
+
 :hierarchy:
    - defaults
    - local
