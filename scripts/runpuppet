@@ -96,7 +96,7 @@ def runtimedcommand(command):
 
 if __name__ == '__main__':
     setuplogging()
-    getsshkey()
-    getuserdata()
+    # getsshkey()
+    # getuserdata()
     puppetapply()
    
