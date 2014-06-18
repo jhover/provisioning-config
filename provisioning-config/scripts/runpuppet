@@ -15,6 +15,7 @@ import urllib
 # Globals
 
 logfile="/var/log/runpuppet.log"
+puppetlog="/var/log/puppet/puppet.log"
 log = None
 
 def setuplogging():
@@ -61,21 +62,21 @@ def getsshkey():
 def getuserdata():
     #
     # curl http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key
-    #  This value, if present, should be inserted into /etc/hiera    
+    #  This value, if present, should be inserted into /etc/hiera/userdata.yaml    
     #
     # curl http://169.254.169.254/latest/user-data
     # curl --connect-timeout 20 --max-time 120 -s -S http://dev.racf.bnl.gov/xyz -o xyz   
     global log
-    log.info("Running getuserdate()...")
+    log.info("Running getuserdata()...")
     userdataurl="http://169.254.169.254/latest/user-data"
-
 
 
 def puppetapply():
     global log
+    global puppetlog
     log.info("Running puppet apply...")
     os.chdir("/etc/puppet")
-    runtimedcommand("puppet apply --verbose --modulepath ./modules manifests/site.pp " )
+    runtimedcommand("puppet apply --verbose --modulepath ./modules manifests/site.pp >> %s " % puppetlog  )
 
 
 def runtimedcommand(command):
@@ -98,18 +99,4 @@ if __name__ == '__main__':
     getsshkey()
     getuserdata()
     puppetapply()
-    
-
-# 
-#DATE=`date`
-#echo "[$DATE] Checking for new config..." >> $PUPPETLOG
-
-
-
-#DATE=`date`
-#echo "[$DATE] Running Puppet..." >> $PUPPETLOG
-#cd /etc/puppet
-#puppet apply --verbose --modulepath ./modules manifests/site.pp >>$PUPPETLOG 2>&1
-#DATE=`date`
-#echo "[$DATE] Done running Puppet..." >> $PUPPETLOG
-
+   
