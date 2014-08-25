@@ -1,0 +1,4 @@
+motd_messages:
+  "motd2":
+    message: "This is the Hiera local message."
+    order: '101'

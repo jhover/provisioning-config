@@ -1,0 +1,4 @@
+motd_messages:
+      "motd3":
+         message: "This is the Hiera userdata message."
+         order: '102'
