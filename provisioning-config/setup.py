@@ -18,7 +18,7 @@ puppet_files = ['etc/puppet/%s' %file for file in os.listdir('etc/puppet') if os
 
 setup(
     name="provisioning-config",
-    version='0.9.1',
+    version='0.9.2',
     description='VM-based configuration resources.',
     long_description='''VM-based configuration resources.''',
     license='GPL',
