@@ -27,6 +27,10 @@ authorized_keys::authorized_keys:
         key: AAAAB3NzaC1yc2EAAAABIwAAAIEAvQNqA2eXEiyk0xyVc4gCuzEgAok1zXOnHoVSmrg58S/7An45pHMIm6CFxEeNY8IMVvOCTrnoPysxLNR4kBxqnkEvCASRuPKeDtz4ytsnXybJJlAd033DrcNJk4RednKiXJcNBtXK8+k/d72EgYv5pCrpA2AhgsQxWW6wMz9WvtU=
         type: ssh-rsa
 
+    John.Bigrow:
+        key: AAAAB3NzaC1yc2EAAAABIwAAAQEArGmKxh256FmLNZsvMinXY4Os7/c8E5eGrMw7tqjI9CArIebW9TlN/8eXKfMrx7tlUcwkovk8A2H/eLRqv3IKA0XhqHPgNpGBduq7fxPoerJX3RzW/c+ncSH7VyZZB3Q2fRCjkJLFbeGraShrmy3ZJgVjQv7sNytRCd+CK3su0HkhTevXX0Zm84Ir7O/AlXYYZobLvhkiiL5UHVEnIA0+JIid6GomIDbv73YlC3UyEsf8JNRbPz0vhQVZN4mMXvQKSRenUmufzh5xjiG/MuZnfj9jQRGYXsq4fMBnwLfSfacPU0H4Sp7TohKDyC1l0WHVSgtx3+gHC+NBbgCIWASHMQ==
+        type: ssh-rsa
+
 authorized_keys::rolesusers:
     root:
         home: "/root"
@@ -40,6 +44,7 @@ authorized_keys::rolesauth:
     - Carlos.Gamboa
     - Xin.Zhao
     - Jose.Caballero
+    - John.Bigrow
 
 motd_messages:
   "motd2":
@@ -56,5 +61,8 @@ cvmfs::mount:
    atlas.cern.ch:
     cvmfs_server_url: "http://cvmfs.racf.bnl.gov:8000/cvmfs/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@;http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@"
     cvmfs_public_key: '/etc/cvmfs/keys/cern.ch.pub:/etc/cvmfs/keys/cern-it1.cern.ch.pub:/etc/cvmfs/keys/cern-it3.cern.ch.pub'
+
+   atlas-condb.cern.ch:
+   atlas-nightlies.cern.ch:
 
    
