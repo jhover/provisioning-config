@@ -1,4 +1,7 @@
-
+#
+# Hiera local.yaml
+# This is intended to be adjust for *build-time* customizations. 
+#
 classes: 
  - cvmfs
 
