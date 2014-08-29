@@ -37,6 +37,8 @@ setup(
           'Topic :: System Administration :: Management',
     ],
     scripts=[ 'scripts/runpuppet',
+              'scripts/runpuppettwice',
+              'scripts/mountdisks',
              ],
     data_files=[ ('/usr/share/doc/provisioning-config', 
                      ['README.txt', 

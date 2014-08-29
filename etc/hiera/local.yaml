@@ -51,6 +51,9 @@ motd_messages:
     message: "This is the Hiera local message."
     order: '101'
 
+cvmfs:
+    cvmfs_cache_base: '/home/cvmfs/cache'
+
 cvmfs::domain:
   cern.ch:
     cvmfs_server_url: "http://cvmfs.racf.bnl.gov:8000/cvmfs/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@;http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@"
