@@ -1,5 +1,13 @@
 #!/bin/env python
-# Could be expanded to support other methods...
+#  Finds largest AWS/Openstack ephemeral storage device, formats it, 
+#  mounts it as /home, and copies current contents of /home to it. 
+#
+#  Eliminate / partition from candidates
+# http://stackoverflow.com/questions/7718411/determine-device-of-filesystem-in-python
+#
+
+
+
 
 import logging
 import os
@@ -8,11 +16,8 @@ import sys
 import time
 import urllib
 
-
 # Globals
-
-logfile="/var/log/runpuppet.log"
-puppetlog="/var/log/puppet/puppet.log"
+logfile="/var/log/mountdisks.log"
 log = None
 
 def setuplogging():
@@ -51,18 +56,10 @@ def setuplogging():
         log.addHandler(hdlr)
     log.setLevel(logging.DEBUG)
 
-def getsshkey():
-    global log
-    log.info("Running getsshkey()...")
-    sshkeyurl="http://169.254.169.254/latest/meta-data/public-keys/0/openssh-key"
+def mountdisks()
+	global log
+	
 
-
-def puppetapply():
-    global log
-    global puppetlog
-    log.info("Running puppet apply...")
-    os.chdir("/etc/puppet")
-    runtimedcommand("puppet apply --verbose --modulepath ./modules manifests/site.pp >> %s " % puppetlog  )
 
 
 def runtimedcommand(command):
@@ -79,9 +76,9 @@ def runtimedcommand(command):
         log.debug("Error: %s" % err.strip())  
     else:
         log.debug("Command returned OK.")
-    return out
-
+	return out
+	
 if __name__ == '__main__':
     setuplogging()
-    puppetapply()
+    mountdisks()
    
