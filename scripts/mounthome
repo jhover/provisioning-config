@@ -3,8 +3,10 @@
 #  Finds largest unmounted AWS/Openstack ephemeral storage device, formats it, 
 #  mounts it as /home, and copies current contents of /home to it. 
 #
+#  Gathers partition information from 'lsblk -bl'
 #  Eliminate / partition from candidates
-#  http://stackoverflow.com/questions/7718411/determine-device-of-filesystem-in-python
+#  Exit if /home is already mounted as a separate partition
+#  Note: does not deal with LVM partitioned systems!! 
 #
 
 import logging
@@ -15,8 +17,36 @@ import time
 import urllib
 
 # Globals
-logfile="/var/log/mountdisks.log"
+logfile="/var/log/mounthome.log"
 log = None
+
+class PartInfo(object):
+
+    def __init__(self, fields):
+        # Parameter is list of fields from 'lsblk -bl' output...
+        #print ("length: %s" % len(fields))
+        self.name = fields[0]
+        maj,min = fields[1].split(':')
+        self.maj = maj
+        self.min = min
+        self.rm = fields[2]
+        self.size = fields[3]
+        self.ro = fields[4]
+        self.type = fields[5]
+        if len(fields) == 7: 
+            self.mount = fields[6]
+        else:
+            self.mount = None
+
+    def __str__(self):
+        return "Partinfo: %s %s:%s %s %s %s %s %s" % (self.name,
+                                                      self.maj,
+                                                      self.min,
+                                                      self.rm,
+                                                      self.size,
+                                                      self.ro,
+                                                      self.type,
+                                                      self.mount)
 
 def setuplogging():
     global log
@@ -54,34 +84,83 @@ def setuplogging():
         log.addHandler(hdlr)
     log.setLevel(logging.DEBUG)
 
-def mountdisks()
-# 		echo "Checking /dev/$VD ..." >> $LOGFILE
-#		fdisk -l /dev/$VD 2>/dev/null | grep Disk >> $LOGFILE
-#		if [ $? -eq 0 ]; then
-#			d=`date`
-#			echo "Virtual disk seen at /dev/$VD: $d"
-#			echo "Virtual disk seen at /dev/$VD: $d" >> $LOGFILE
-#			echo "Creating filesystem..."
-#			echo "Creating filesystem..." >> $LOGFILE
-#			mkfs.ext3 -F -L home /dev/$VD | tee $LOGFILE
-#			echo "Mounting and mirroring /home..."
-#			echo "Mounting and mirroring /home..." >> $LOGFILE  2>&1
-#			mv -v /home /home.orig >> $LOGFILE  2>&1
-#			mkdir -v /home >> $LOGFILE  2>&1
-#			mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
-#			cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
-#			d=`date`
-#			echo "Done with /dev/$VD: $d"
-#			echo "Done with /dev/$VD: $d" >> $LOGFILE 
+def mounthome():
+    best = selectdisk()
+    if best:
+        formatdisk(best)
+        movemountmirror(best)
 
-	
-
-
-def getdevs()
+def getpartitions():
     global log
-	cmd = 'lsblk -b"
-	out = runtimedcommand(cmd)
-	print( out)
+    cmd = 'lsblk -bl'
+    out = runtimedcommand(cmd)
+    lines = out.split("\n")
+    parts = []
+    for line in lines[1:]:
+        fields = line.split()
+        if len(fields) > 5:
+            p = PartInfo(fields)
+            parts.append(p)
+    for p in parts:
+        print(p)
+    return parts    
+
+  
+def selectdisk():
+    plist = getpartitions()
+    log.debug("Got list of %s partition objects" % len(plist))
+    # ? /home already separate?
+    for p in plist:
+        if p.mount == "/home":
+            log.info("/home already mounted: %s" % p.name)
+            return None
+    # Select from only partitions marked 'part' that are currently unmounted...
+    candidates = []
+    for p in plist:
+        if p.type == "part" or p.type == "disk":
+            if p.mount is None:
+                candidates.append(p)
+    if len(candidates) < 1:
+        log.info("No unmounted partitions/disks.")
+        return None
+    log.debug("Got list of %s unmounted regular partitions" % len(candidates))
+    #for c in candidates:
+    #    print(c)
+    # Choose largest unmounted partition
+    from operator import attrgetter
+    candidates.sort(key=attrgetter('size'), reverse=False)
+    log.debug("Sorting list of partitions by size...")
+    #for c in candidates:
+    #    print(c)    
+    best = candidates[0]
+    log.info("Found candidate for /home: %s" % best )
+    return best
+    
+def formatdisk(pinfo):
+    # mkfs.ext3 -F -L home /dev/$VD
+    devname = "/dev/%s" % pinfo.name
+    cmd = "mkfs.ext3 -F -L home %s" % devname
+    runtimedcommand(cmd)
+    
+def movemountmirror(pinfo):
+    # mv -v /home /home.orig >> $LOGFILE  2>&1
+    #            mkdir -v /home >> $LOGFILE  2>&1
+    #            mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
+    #            cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
+    devname = "/dev/%s" % pinfo.name    
+    os.rename("/home", "/home.orig")
+    os.mkdir("/home")
+    
+    log.info("Mounting %s at /home..." % devname)
+    cmd = 'mount -t ext3 %s /home' % devname
+    runtimedcommand(cmd)
+    
+    log.info("Copying content from")
+    cmd = "cp -avr /home.orig/* /home"
+    runtimedcommand(cmd)
+    log.info("Done.")
+    #shutil.copy2("/home.orig" "/home")
+    
 
 
 def runtimedcommand(command):
@@ -104,5 +183,5 @@ def runtimedcommand(command):
 	
 if __name__ == '__main__':
     setuplogging()
-    mountdisks()
+    mounthome()
    
