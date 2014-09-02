@@ -39,7 +39,7 @@ class cvmfs::install inherits cvmfs {
   }
 
   if $cvmfs_cache_base != $default_cvmfs_cache_base {
-    file{$cvmfs_cache_base:
+    file{ $cvmfs_cache_base:
       ensure  => directory,
       owner   => cvmfs,
       group   => cvmfs,
