@@ -148,9 +148,15 @@ def movemountmirror(pinfo):
     #            mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
     #            cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
     devname = "/dev/%s" % pinfo.name    
-    os.rename("/home", "/home.orig")
-    os.mkdir("/home")
-    
+    if not os.path.isdir("/home.orig"):  
+        os.rename("/home", "/home.orig")
+    # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
+    # So it may no longer have the original ephemeral partion. 
+    # So we want to mount and re-populate.
+    try:
+        os.mkdir("/home")
+    except OSError:
+        pass    
     log.info("Mounting %s at /home..." % devname)
     cmd = 'mount -t ext3 %s /home' % devname
     runtimedcommand(cmd)
@@ -158,10 +164,8 @@ def movemountmirror(pinfo):
     log.info("Copying content from")
     cmd = "cp -avr /home.orig/* /home"
     runtimedcommand(cmd)
-    log.info("Done.")
-    #shutil.copy2("/home.orig" "/home")
-    
-
+    log.info("Done.")    
+        
 
 def runtimedcommand(command):
     global log
