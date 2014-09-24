@@ -4,6 +4,7 @@
 #
 classes: 
  - cvmfs
+ - authorized_keys
 
 
 authorized_keys::authorized_keys:
