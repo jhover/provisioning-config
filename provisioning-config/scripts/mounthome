@@ -92,11 +92,11 @@ def mounthome():
 
 def getpartitions():
     global log
-    cmd = 'lsblk -bl'
+    cmd = 'lsblk -lb | grep -v lvm'
     out = runtimedcommand(cmd)
     lines = out.split("\n")
     parts = []
-    for line in lines[1:]:
+    for line in lines:
         fields = line.split()
         if len(fields) > 5:
             p = PartInfo(fields)
