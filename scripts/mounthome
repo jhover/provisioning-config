@@ -24,7 +24,7 @@ log = None
 class BlockDevice(object):
     
     def __init__(self):
-        self.has_lvm = False
+        self.has_child = False
 
     def __str__(self):
         s = "BlockDevice: "
@@ -108,6 +108,8 @@ def mounthome():
     log.debug("Adding/checking lvm entries...")
     blockdevs = checklvm(blockdevs)
     log.debug("Device list after checklvm: %s" % blockdevs)
+    blockdevs = checkparts(blockdevs)
+    log.debug("Device list after checkparts: %s" % blockdevs)
     log.debug("Selecting candidate.")
     best = selectdevice(blockdevs)
     if best:
@@ -171,7 +173,7 @@ def getblockinfo():
 
 def checklvm(devlist):
     #
-    # runs pvdisplay and sets has_lvm to True on block devices with
+    # runs pvdisplay and sets has_child to True on block devices with
     # LVM volumes on them...
     #
     global log
@@ -186,9 +188,36 @@ def checklvm(devlist):
         for d in devlist:
             if d.name == devname:
                 log.info("Found matching LVM block device. %s" % d )
-                d.has_lvm = True
+                d.has_child = True
     return devlist
-  
+
+def checkparts(devlist):
+    #  
+    # Determines if a disk device has child partitions, and sets has_child to
+    # True on them...
+    # 
+    global log
+    
+    disks = []
+    parts = []
+    for dev in devlist:
+        if dev.type == 'disk':
+            disks.append(dev)
+        if dev.type == 'part':
+            parts.append(dev)
+    for d in disks:
+        for p in parts:
+            if d.name in p.name:
+                log.info("Found partition %s in %s " % (d.name, p.name))
+                d.has_child = True
+                
+    return devlist
+            
+        
+        
+    
+    
+    
   
 def selectdevice(devlist):
     plist = devlist
@@ -202,7 +231,7 @@ def selectdevice(devlist):
     candidates = []
     for p in plist:
         if p.type == "part" or p.type == "disk":
-            if p.mountpoint is None and p.has_lvm is False:
+            if p.mountpoint is None and p.has_child is False:
                 candidates.append(p)
     if len(candidates) < 1:
         log.info("No unmounted partitions/disks.")
