@@ -145,7 +145,7 @@ def getblockinfo():
         fields = line.split()
         for field in fields:
             (key,val) = field.split('=')
-            key = key.lower()
+            key = key.lower().strip()
             log.debug("Handling key %s" % key)
             val = val.replace('"', '')
             if len(val) == 0:
