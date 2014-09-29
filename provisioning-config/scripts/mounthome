@@ -140,31 +140,31 @@ def getblockinfo():
     log.debug("got %d lines" % len(lines))
     blockdevs = []
     for line in lines:
-        if len(line) > 1:
-            #log.debug("Creating block device for line %s" % line)
-            bd = BlockDevice()
-            fields = line.split()
-            for field in fields:
-                (key,val) = field.split('=')
-                key = key.lower().strip()
-                #log.debug("Handling key %s" % key)
-                val = val.replace('"', '')
-                if len(val) == 0:
-                    #log.debug("Found empty val for %s, setting to None" % key)
-                    val = None
-                try:
-                    intval = int(val)
-                    #log.debug("Found integer value for %s, setting." % key)
-                    val = intval
-                except:
-                    pass
-                #log.debug("Setting attribute %s to %s" % (key, val))
-                setattr(bd, key, val)
-            
-            if bd.type != "lvm":
-                blockdevs.append(bd)
-            else:
-                log.debug("Ignoring LVM block device %s" % bd.name)
+
+        #log.debug("Creating block device for line %s" % line)
+        bd = BlockDevice()
+        fields = line.split()
+        for field in fields:
+            (key,val) = field.split('=')
+            key = key.lower().strip()
+            #log.debug("Handling key %s" % key)
+            val = val.replace('"', '')
+            if len(val) == 0:
+                #log.debug("Found empty val for %s, setting to None" % key)
+                val = None
+            try:
+                intval = int(val)
+                #log.debug("Found integer value for %s, setting." % key)
+                val = intval
+            except:
+                pass
+            #log.debug("Setting attribute %s to %s" % (key, val))
+            setattr(bd, key, val)
+        
+        if bd.type != "lvm":
+            blockdevs.append(bd)
+        else:
+            log.debug("Ignoring LVM block device %s" % bd.name)
     return blockdevs
 
 
@@ -179,7 +179,7 @@ def checklvm(devlist):
     lines = out.split("\n")
     for line in lines:
         fields = line.split(':')
-        print(fields[0])
+        log.debug("LVM device name is %s" % fields[0])
     return devlist
   
   
@@ -188,7 +188,7 @@ def selectdevice(devlist):
     log.debug("Got list of %s block device objects" % len(plist))
     # ? /home already separate?
     for p in plist:
-        if p.mount == "/home":
+        if p.mountpoint == "/home":
             log.info("/home already mounted: %s" % p.name)
             return None
     # Select from only partitions marked 'part' that are currently unmounted...
@@ -253,9 +253,11 @@ def runtimedcommand(command):
     (out, err) = p.communicate()
     delta = time.time() - before
     log.info("Command took %d seconds." % delta)
+    out = out.strip()
+    err = err.strip()
     if p.returncode != 0:
-        log.debug("Output: %s" % out.strip())
-        log.debug("Error: %s" % err.strip())
+        log.debug("Output: %s" % out)
+        log.debug("Error: %s" % err)
         return None  
     else:
         log.debug("Command returned OK.")
