@@ -114,8 +114,8 @@ def mounthome():
     best = selectdevice(blockdevs)
     if best:
         log.info("Found candidate. Handling...")
-        #formatdisk(best)
-        #movemountmirror(best)
+        formatdisk(best)
+        movemountmirror(best)
         log.info("Done")
 
 def getpartitions():
@@ -209,15 +209,9 @@ def checkparts(devlist):
         for p in parts:
             if d.name in p.name:
                 log.info("Found partition %s in %s " % (d.name, p.name))
-                d.has_child = True
-                
+                d.has_child = True   
     return devlist
-            
-        
-        
-    
-    
-    
+                
   
 def selectdevice(devlist):
     plist = devlist
@@ -236,15 +230,10 @@ def selectdevice(devlist):
     if len(candidates) < 1:
         log.info("No unmounted partitions/disks.")
         return None
-    log.debug("Got list of %s unmounted regular partitions" % len(candidates))
-    #for c in candidates:
-    #    print(c)
-    # Choose largest unmounted partition
+    log.debug("Got list of %s unmounted regular partitions/disks" % len(candidates))
     from operator import attrgetter
     candidates.sort(key=attrgetter('size'), reverse=False)
-    log.debug("Sorting list of partitions by size...")
-    #for c in candidates:
-    #    print(c)    
+
     best = candidates[0]
     log.info("Found candidate for /home: %s" % best )
     return best
