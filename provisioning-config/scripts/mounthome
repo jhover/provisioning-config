@@ -148,7 +148,13 @@ def getblockinfo():
             val = val.replace('"', '')
             if len(val) == 0:
                 val = None
+            try:
+                intval = int(val)
+                val = intval
+            except:
+                pass
             setattr(bd, key, val)
+        
         if bd.type != "lvm":
             blockdevs.append(bd)
         else:
@@ -183,7 +189,7 @@ def selectdevice(devlist):
     candidates = []
     for p in plist:
         if p.type == "part" or p.type == "disk":
-            if p.mount is None:
+            if p.mountpoint is None:
                 candidates.append(p)
     if len(candidates) < 1:
         log.info("No unmounted partitions/disks.")
