@@ -108,7 +108,7 @@ def mounthome():
     log.debug("Adding/checking lvm entries...")
     blockdevs = checklvm(blockdevs)
     log.debug("Selecting candidate.")
-    best = selectdisk(blockdevs)
+    best = selectdevice(blockdevs)
     if best:
         log.info("Found candidate. Handling...")
         #formatdisk(best)
@@ -149,19 +149,26 @@ def getblockinfo():
             if len(val) == 0:
                 val = None
             setattr(bd, key, val)
-        blockdevs.append(bd)
+        if bd.type != "lvm":
+            blockdevs.append(bd)
+        else:
+            log.debug("Ignoring LVM block device %s" % bd.name)
     return blockdevs
 
 
 def checklvm(devlist):
     #
-    # runs pvdisplay and 
+    # runs pvdisplay and sets has_lvm to True on block devices with
+    # LVM volumes on them...
     #
     global log
     cmd = 'pvdisplay -c'
     out = runtimedcommand(cmd)
     lines = out.split("\n")
-  
+    for line in lines:
+        fields = line.split(':')
+        print(fields[0])
+    return devlist
   
   
 def selectdevice(devlist):
