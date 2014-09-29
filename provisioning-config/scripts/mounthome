@@ -145,6 +145,9 @@ def getblockinfo():
         for field in fields:
             (key,val) = field.split('=')
             key = key.lower()
+            val = val.replace('"', '')
+            if len(val) == 0:
+                val = None
             setattr(bd, key, val)
         blockdevs.append(bd)
     return blockdevs
