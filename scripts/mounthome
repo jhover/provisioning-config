@@ -28,7 +28,8 @@ class BlockDevice(object):
 
     def __str__(self):
         s = "BlockDevice: "
-        s += dir(self)
+        attrs = vars(self)
+        s += ', '.join("%s: %s" % item for item in attrs.items())
         return s
         
 
