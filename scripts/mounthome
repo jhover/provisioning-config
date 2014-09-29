@@ -157,6 +157,7 @@ def getblockinfo():
                 val = intval
             except:
                 pass
+            log.debug("Setting attribute %s to %s" % (key, val))
             setattr(bd, key, val)
         
         if bd.type != "lvm":
