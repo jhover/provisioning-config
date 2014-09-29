@@ -1,13 +1,14 @@
 #!/bin/env python
 # 
-#  Finds largest unmounted AWS/Openstack ephemeral storage device, formats it, 
-#  mounts it as /home, and copies current contents of /home to it. 
+#  Finds largest unmounted AWS/Openstack ephemeral storage device (disk
+#  or existing partition, formats it,  mounts it as /home, and copies 
+#  current contents of /home to it. 
 #
-#  Gathers partition information from 'lsblk -bl'
+#  Gathers partition information from 'lsblk -b'
 #  Eliminate / partition from candidates
 #  Exit if /home is already mounted as a separate partition
-#  Note: does not deal with LVM partitioned systems!! 
-#
+#  
+
 
 import logging
 import os
@@ -19,6 +20,12 @@ import urllib
 # Globals
 logfile="/var/log/mounthome.log"
 log = None
+
+class BlockDevice(object):
+    
+    def __init__(self):
+        pass
+
 
 class PartInfo(object):
 
@@ -85,14 +92,23 @@ def setuplogging():
     log.setLevel(logging.DEBUG)
 
 def mounthome():
-    best = selectdisk()
+    global log
+    log.debug("Getting block device info...")
+    blockdevs = getblockinfo()
+    log.debug("Got %d blockdevs: %s" % (len(blockdevs),blockdevs ) )
+    log.debug("Adding/checking lvm entries...")
+    blockdevs = checklvm(blockdevs)
+    log.debug("Selecting candidate.")
+    best = selectdisk(blockdevs)
     if best:
-        formatdisk(best)
-        movemountmirror(best)
+        log.info("Found candidate. Handling...")
+        #formatdisk(best)
+        #movemountmirror(best)
+        log.info("Done")
 
 def getpartitions():
     global log
-    cmd = 'lsblk -br'
+    cmd = 'lsblk -nbr'
     out = runtimedcommand(cmd)
     lines = out.split("\n")
     parts = []
@@ -105,10 +121,37 @@ def getpartitions():
         print(p)
     return parts    
 
+
+def getblockinfo():
+    global log
+    cmd = 'lsblk -nbP'
+    out = runtimedcommand(cmd)
+    log.debug("out is %s" % out)
+    lines = out.split("\n")
+    log.debug("got %d lines" % len(lines))
+    blockdevs = []
+    for line in lines:
+        bd = BlockDevice()
+        fields = line.split()
+        for field in fields:
+            (key,val) = field.split('=')
+            key = key.lower()
+            setattr(bd, key, val)
+        blockdevs.append(bd)
+    return blockdevs
+
+
+def checklvm():
+    global log
+    cmd = 'pvdisplay -c'
+    out = runtimedcommand(cmd)
+    lines = out.split("\n")
   
-def selectdisk():
-    plist = getpartitions()
-    log.debug("Got list of %s partition objects" % len(plist))
+  
+  
+def selectdevice(devlist):
+    plist = devlist
+    log.debug("Got list of %s block device objects" % len(plist))
     # ? /home already separate?
     for p in plist:
         if p.mount == "/home":
