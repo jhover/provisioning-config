@@ -104,9 +104,10 @@ def mounthome():
     global log
     log.debug("Getting block device info...")
     blockdevs = getblockinfo()
-    log.debug("Got %d blockdevs: %s" % (len(blockdevs),blockdevs ) )
+    log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
     log.debug("Adding/checking lvm entries...")
     blockdevs = checklvm(blockdevs)
+    log.debug("Device list after checklvm: %s" % blockdevs)
     log.debug("Selecting candidate.")
     best = selectdevice(blockdevs)
     if best:
@@ -179,7 +180,13 @@ def checklvm(devlist):
     lines = out.split("\n")
     for line in lines:
         fields = line.split(':')
-        log.debug("LVM device name is %s" % fields[0])
+        devpath = fields[0]
+        devname = os.path.basename(devpath)
+        log.debug("LVM device path=%s name=%s" % (devpath, devname))
+        for d in devlist:
+            if d.name == devname:
+                log.info("Found matching LVM block device. %s" % d )
+                d.has_lvm = True
     return devlist
   
   
@@ -195,7 +202,7 @@ def selectdevice(devlist):
     candidates = []
     for p in plist:
         if p.type == "part" or p.type == "disk":
-            if p.mountpoint is None:
+            if p.mountpoint is None and p.has_lvm is False:
                 candidates.append(p)
     if len(candidates) < 1:
         log.info("No unmounted partitions/disks.")
