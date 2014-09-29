@@ -146,8 +146,7 @@ def getblockinfo():
         for field in fields:
             (key,val) = field.split('=')
             key = key.lower()
-            if key == 'type':
-                key = 'devtype'
+            log.debug("Handling key %s" % key)
             val = val.replace('"', '')
             if len(val) == 0:
                 log.debug("Found empty val for %s, setting to None" % key)
