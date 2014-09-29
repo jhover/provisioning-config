@@ -140,6 +140,7 @@ def getblockinfo():
     log.debug("got %d lines" % len(lines))
     blockdevs = []
     for line in lines:
+        log.debug("Creating block device for line %s" % line)
         bd = BlockDevice()
         fields = line.split()
         for field in fields:
@@ -147,9 +148,11 @@ def getblockinfo():
             key = key.lower()
             val = val.replace('"', '')
             if len(val) == 0:
+                log.debug("Found empty val for %s, setting to None" % key)
                 val = None
             try:
                 intval = int(val)
+                log.debug("Found integer value for %s, setting." % key)
                 val = intval
             except:
                 pass
