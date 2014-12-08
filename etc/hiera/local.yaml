@@ -5,7 +5,7 @@
 classes: 
  - cvmfs
  - authorized_keys
-
+ - selinux
 
 authorized_keys::authorized_keys:
     John.Hover:
@@ -31,7 +31,15 @@ authorized_keys::authorized_keys:
     John.Bigrow:
         key: AAAAB3NzaC1yc2EAAAABIwAAAQEArGmKxh256FmLNZsvMinXY4Os7/c8E5eGrMw7tqjI9CArIebW9TlN/8eXKfMrx7tlUcwkovk8A2H/eLRqv3IKA0XhqHPgNpGBduq7fxPoerJX3RzW/c+ncSH7VyZZB3Q2fRCjkJLFbeGraShrmy3ZJgVjQv7sNytRCd+CK3su0HkhTevXX0Zm84Ir7O/AlXYYZobLvhkiiL5UHVEnIA0+JIid6GomIDbv73YlC3UyEsf8JNRbPz0vhQVZN4mMXvQKSRenUmufzh5xjiG/MuZnfj9jQRGYXsq4fMBnwLfSfacPU0H4Sp7TohKDyC1l0WHVSgtx3+gHC+NBbgCIWASHMQ==
         type: ssh-rsa
-
+    
+    John.DeStefano:
+        key: AAAAB3NzaC1yc2EAAAABIwAAAIEAu3jvrT1MH5MEBgUOf3cLkwPtWmdFJmjEa0BATwOGx8hkjYUeVzYPys84WwQn4z9NQQqcQeSphmyGOp5ngSCHBtFQ0J4WpDX1h4iiBsy4Uj0Oo/JTIcL9++Ru1/2WD6dAYiN5aR6rJr+Bp2WceSPoin3VLqBX2LAkvFOAQdgPCSE=
+        type: ssh-rsa
+        
+    Alexander.Zaytsev:
+        key: AAAAB3NzaC1yc2EAAAABIwAAAQEAyhbAJBvxl2xCrmzUQa0vQUO+v+0OZ+KKJB//4N+CdZvX8OFCGA/nSpqtYrABkRDu290n8jQjEDkujPL04SFevqmesMmo9DmXi0QjySs1IEgc2+2FyDG2CaUUFEcrK9YIQPbT3BKeVN1pxFIog4BJmnaocGg6GSgAzgEro1HBSGTs/STz8/7MTR/YpH4H8P54yCjhSFgUVWFck4ZuezfqkXLOm67hxvgmaRzN5L7bO49Iue6kJwUSStmX+TuCyoRqHMiG1FsPLCTHCxMV3CnMnmKm57NDLsJH6wW7LwDQNEH3gKxep6HwuSAayGJOq48gsGVf62KIPEhbvFQIPHHDGw==
+        type: ssh-rsa
+        
 authorized_keys::rolesusers:
     root:
         home: "/root"
@@ -46,6 +54,8 @@ authorized_keys::rolesauth:
     - Xin.Zhao
     - Jose.Caballero
     - John.Bigrow
+    - John.DeStefano
+    - Alexander.Zaytsev
 
 motd_messages:
   "motd2":
@@ -69,4 +79,5 @@ cvmfs::mount:
         {} 
     atlas-nightlies.cern.ch:
         {}
-   
+
+selinux::mode: 'permissive'   
