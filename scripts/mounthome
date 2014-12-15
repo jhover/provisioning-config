@@ -116,7 +116,7 @@ def unmount_auto():
 def mounthome():
     global log
     
-    
+    unmount_auto()
     log.debug("Getting block device info...")
     blockdevs = getblockinfo()
     log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
