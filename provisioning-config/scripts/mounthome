@@ -100,8 +100,23 @@ def setuplogging():
         log.addHandler(hdlr)
     log.setLevel(logging.DEBUG)
 
+def unmount_auto():
+    '''
+    Cloud-init sometimes mounts ephemerals as /mnt or /data, so let's
+    unmount them first. 
+    '''
+    global log
+    mounts = ['mnt','data']
+    for m in mounts:
+        log.debug("Unmounting /%s" % m)
+        cmd = 'umount /%s' % m 
+        out = runtimedcommand(cmd)
+    log.debug("Unmounted automounts...")
+
 def mounthome():
     global log
+    
+    
     log.debug("Getting block device info...")
     blockdevs = getblockinfo()
     log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
