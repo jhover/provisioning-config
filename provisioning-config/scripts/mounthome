@@ -7,7 +7,24 @@
 #  Gathers partition information from 'lsblk -b'
 #  Eliminate / partition from candidates
 #  Exit if /home is already mounted as a separate partition
-#  
+#
+#
+#   Cloudinit directives to create striped merged partition. 
+#
+# -  [sh, -c, "for letter in f g; do parted -s -a optimal /dev/xvd$letter ; done;"]
+#-  [sh, -c, "for letter in f g; do parted -s -a optimal /dev/xvd$letter mklabel gpt; done;"]
+#-  [sh, -c, "for letter in f g; do parted -a optimal /dev/xvd$letter mkpart primary 0% 100%;done;"] 
+#-  [sh, -c, "mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2  /dev/xvdf1 /dev/xvdg1;"]
+#-  mkfs.ext4 /dev/md0;
+#-  [sh, -c, "mount -t ext4 /dev/md0 /s3cache_ssd;"]
+#-  [sh, -c, "fusermount -u /mnt/atlasuserdisk;fusermount -u /mnt/atlasproddisk; fusermount -u /mnt/atlasdatadisk;"]
+#-  mount -a;
+#
+#
+#
+#
+#
+#
 
 
 import logging

@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 #
-# Setup prog for Certify certificate management utility
+# Setup prog for VM-based configuration
+# 
 
 import os
 import sys
