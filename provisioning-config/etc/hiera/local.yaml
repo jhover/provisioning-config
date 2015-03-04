@@ -39,6 +39,7 @@ authorized_keys::authorized_keys:
     Alexander.Zaytsev:
         key: AAAAB3NzaC1yc2EAAAABIwAAAQEAyhbAJBvxl2xCrmzUQa0vQUO+v+0OZ+KKJB//4N+CdZvX8OFCGA/nSpqtYrABkRDu290n8jQjEDkujPL04SFevqmesMmo9DmXi0QjySs1IEgc2+2FyDG2CaUUFEcrK9YIQPbT3BKeVN1pxFIog4BJmnaocGg6GSgAzgEro1HBSGTs/STz8/7MTR/YpH4H8P54yCjhSFgUVWFck4ZuezfqkXLOm67hxvgmaRzN5L7bO49Iue6kJwUSStmX+TuCyoRqHMiG1FsPLCTHCxMV3CnMnmKm57NDLsJH6wW7LwDQNEH3gKxep6HwuSAayGJOq48gsGVf62KIPEhbvFQIPHHDGw==
         type: ssh-rsa
+
         
 authorized_keys::rolesusers:
     root:
@@ -80,4 +81,16 @@ cvmfs::mount:
     atlas-nightlies.cern.ch:
         {}
 
-selinux::mode: 'permissive'   
+selinux::mode: 'permissive' 
+
+htcondor::is_worker:  'true'
+htcondor::uid_domain: 'localhost.localdomain'
+htcondor::managers: 
+      - 'gridtest06.racf.bnl.gov:29660'
+htcondor::computing_elements: 
+      - 'gridtest06.racf.bnl.gov'
+
+
+      
+
+  
