@@ -83,12 +83,12 @@ cvmfs::mount:
 
 selinux::mode: 'permissive' 
 
-htcondor::is_worker:  'true'
-htcondor::uid_domain: 'localhost.localdomain'
-htcondor::managers: 
-      - 'gridtest06.racf.bnl.gov:29660'
-htcondor::computing_elements: 
-      - 'gridtest06.racf.bnl.gov'
+#htcondor::is_worker:  'true'
+#htcondor::uid_domain: 'localhost.localdomain'
+#htcondor::managers: 
+#      - 'gridtest06.racf.bnl.gov:29660'
+#htcondor::computing_elements: 
+#      - 'gridtest06.racf.bnl.gov'
 
 
       
