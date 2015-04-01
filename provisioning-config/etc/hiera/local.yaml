@@ -64,7 +64,7 @@ motd_messages:
     order: '101'
 
 cvmfs::cvmfs_cache_base: '/home/cvmfs'
-cvmfs::cvmfs_http_proxy: 'DIRECT'
+cvmfs::cvmfs_http_proxy: 'http://cvmfs-external.racf.bnl.gov:3128;DIRECT'
 
 cvmfs::domain:
     cern.ch:
