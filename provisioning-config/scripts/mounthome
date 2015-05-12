@@ -20,12 +20,6 @@
 #-  [sh, -c, "fusermount -u /mnt/atlasuserdisk;fusermount -u /mnt/atlasproddisk; fusermount -u /mnt/atlasdatadisk;"]
 #-  mount -a;
 #
-#
-#
-#
-#
-#
-
 
 import logging
 import os
