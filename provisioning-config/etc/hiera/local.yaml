@@ -16,9 +16,6 @@ authorized_keys::authorized_keys:
         key: AAAAB3NzaC1yc2EAAAABIwAAAQEAyNVVQHhzAoTTE8yfeU8tRMqOQ6MNt6Qz+xJgUj40bVKsRX06Ji9CpGsTB4c0vaEicguQ/awiMpc355CEsfBh1xPzkjh7kzsKzTXsj7dTBroIgwrxrKOHQDVEe2TAh++ebhvfn641LBRHov4j/dk6a9F9YqQVW0H4JdT8fmTFf5GYwI3usNiqCxxRmgmOUPl9/X9E/6A7hCnX4Ma5quu06KHgcrdxBUh1bwMx2ebgQ+haNT1ExSkARwrnsgzSkuLeI+1XUGtv8ZajP5JZrcDjEFlzYmFDy82PYgjgfGepUxC6lBgVOevhe6ZHqT/1V1qiAWvRslPH91Lc+7W88ETTeQ==
         type: ssh-rsa
 
-    Jose.Caballero2:
-        key: AAAAB3NzaC1kc3MAAACBAMiW/TEuoVmz+qBqnSA++4MiK0/4SdlI0V8P18xP+7tPuDIlhsqmwDvHDqmQwKxD2EnkrXa9qIPlBel7zPu0+z72lJdth3CBBzi/RF2cKF7lVUZY2PfGA7be7M19BANzRHn/SxnqRl8JOW/QgV6LFzaJB83GdNdKVH3QA3vO9qZTAAAAFQCmY7IQ3Xnh2Hgks3+UmrLcJXANnQAAAIAmPO/VhQ/IknT9MSEepAQX5rqwgDOURBw4jCFg/E8HofFmBx8db/wEwsNkGJQFGRM4bnrDn0eBHIPUKRYZ35N0bheCwktX1Gg1xhuczudhkkrCMEGySYohLnGkcud3C6K5gxRksWOf7CX0TA1d8Sgd+OrsI7c8/YqqjDjOkfWLAAAAAIEAjh7RDBYcv0Kc0R+ci84LxLy+eh3Ba5c+oynRzAbM/Llc8zEqIgvnO2V98c+xm/rIqeFEsWlb2YtVAOUdZ8kgHtQpJSm4l2A5kzqbp2RwKVJayI2wqWsrpvh0zbkl0qGd1mO94cb9IAPKqkxljQZaAKlziwODEQBICqmUPAJP8Bc= 
-        type: ssh-dss	
 
     Xin.Zhao:
         key: AAAAB3NzaC1yc2EAAAABIwAAAIEAzgZHsVndNrrH/BpyUTBGw/fwrSugwQu2NRhh2RDMn/3gYHrzmhI0E9PLtHQp1+4y90KI0SQVBaEkPQxtavyx2YilxG4pKRKMPDRZ8k/ZZWj+NqbJj0uwPcl8UBP8PWUfJaZDKLcv0e97gBUWGTaa5713Mq4YuPrR7EyO/rkVxMU=
@@ -58,7 +55,6 @@ authorized_keys::rolesauth:
     - Carlos.Gamboa
     - Xin.Zhao
     - Jose.Caballero
-    - Jose.Caballero2
     - John.Bigrow
     - John.DeStefano
     - Alexander.Zaytsev
