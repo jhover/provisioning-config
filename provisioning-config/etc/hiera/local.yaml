@@ -16,7 +16,6 @@ authorized_keys::authorized_keys:
         key: AAAAB3NzaC1yc2EAAAABIwAAAQEAyNVVQHhzAoTTE8yfeU8tRMqOQ6MNt6Qz+xJgUj40bVKsRX06Ji9CpGsTB4c0vaEicguQ/awiMpc355CEsfBh1xPzkjh7kzsKzTXsj7dTBroIgwrxrKOHQDVEe2TAh++ebhvfn641LBRHov4j/dk6a9F9YqQVW0H4JdT8fmTFf5GYwI3usNiqCxxRmgmOUPl9/X9E/6A7hCnX4Ma5quu06KHgcrdxBUh1bwMx2ebgQ+haNT1ExSkARwrnsgzSkuLeI+1XUGtv8ZajP5JZrcDjEFlzYmFDy82PYgjgfGepUxC6lBgVOevhe6ZHqT/1V1qiAWvRslPH91Lc+7W88ETTeQ==
         type: ssh-rsa
 
-
     Xin.Zhao:
         key: AAAAB3NzaC1yc2EAAAABIwAAAIEAzgZHsVndNrrH/BpyUTBGw/fwrSugwQu2NRhh2RDMn/3gYHrzmhI0E9PLtHQp1+4y90KI0SQVBaEkPQxtavyx2YilxG4pKRKMPDRZ8k/ZZWj+NqbJj0uwPcl8UBP8PWUfJaZDKLcv0e97gBUWGTaa5713Mq4YuPrR7EyO/rkVxMU=
         type: ssh-rsa
