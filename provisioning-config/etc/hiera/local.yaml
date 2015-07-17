@@ -63,23 +63,23 @@ motd_messages:
     message: "This is the Hiera local message."
     order: '101'
 
-cvmfs::cvmfs_cache_base: '/home/cvmfs'
-cvmfs::cvmfs_http_proxy: 'http://cvmfs-external.racf.bnl.gov:3128;DIRECT'
+#cvmfs::cvmfs_cache_base: '/home/cvmfs'
+#cvmfs::cvmfs_http_proxy: 'http://cvmfs-external.racf.bnl.gov:3128;DIRECT'
 
-cvmfs::domain:
-    cern.ch:
-        cvmfs_server_url: "http://cvmfs.racf.bnl.gov:8000/cvmfs/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@;http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@"
-        cvmfs_public_key: '/etc/cvmfs/keys/cern.ch.pub:/etc/cvmfs/keys/cern-it1.cern.ch.pub:/etc/cvmfs/keys/cern-it3.cern.ch.pub'
+#cvmfs::domain:
+#    cern.ch:
+#        cvmfs_server_url: "http://cvmfs.racf.bnl.gov:8000/cvmfs/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@;http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@"
+#        cvmfs_public_key: '/etc/cvmfs/keys/cern.ch.pub:/etc/cvmfs/keys/cern-it1.cern.ch.pub:/etc/cvmfs/keys/cern-it3.cern.ch.pub'
 
-cvmfs::mount:
-    atlas.cern.ch:
-        cvmfs_server_url: "http://cvmfs.racf.bnl.gov:8000/cvmfs/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@;http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@"
-        cvmfs_public_key: '/etc/cvmfs/keys/cern.ch.pub:/etc/cvmfs/keys/cern-it1.cern.ch.pub:/etc/cvmfs/keys/cern-it3.cern.ch.pub'
-
-    atlas-condb.cern.ch:
-        {} 
-    atlas-nightlies.cern.ch:
-        {}
+#cvmfs::mount:
+#    atlas.cern.ch:
+#        cvmfs_server_url: "http://cvmfs.racf.bnl.gov:8000/cvmfs/@org@;http://cvmfs-stratum-one.cern.ch:8000/opt/@org@;http://cernvmfs.gridpp.rl.ac.uk:8000/opt/@org@"
+#        cvmfs_public_key: '/etc/cvmfs/keys/cern.ch.pub:/etc/cvmfs/keys/cern-it1.cern.ch.pub:/etc/cvmfs/keys/cern-it3.cern.ch.pub'#
+#
+#   atlas-condb.cern.ch:
+#        {} 
+#    atlas-nightlies.cern.ch:
+#        {}
 
 selinux::mode: 'permissive' 
 
