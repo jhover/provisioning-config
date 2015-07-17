@@ -28,6 +28,17 @@ import sys
 import time
 import urllib
 
+
+class MHMountException(Exception):
+    def __init__(self, value):
+        self.value = value
+    def __str__(self):
+        return repr(self.value)
+
+
+
+
+
 # Globals
 logfile="/var/log/mounthome.log"
 log = None
@@ -139,9 +150,14 @@ def mounthome():
     log.debug("Selecting candidate.")
     best = selectdevice(blockdevs)
     if best:
-        log.info("Found candidate. Handling...")
-        formatdisk(best)
-        movemountmirror(best)
+        log.info("Found candidate %s. Handling..." % best)
+        try:
+            mountdisk(best)
+            log.info("Successfully mounted existing filesystem.")
+        except :
+            log.info("No preexisting formatted filesystem. Formatting and mirroring.")
+            formatdisk(best)
+            movemountmirror(best)
         log.info("Done")
 
 def getpartitions():
@@ -269,26 +285,33 @@ def formatdisk(pinfo):
     devname = "/dev/%s" % pinfo.name
     cmd = "mkfs.ext3 -F -L home %s" % devname
     runtimedcommand(cmd)
-    
+
+def mountdisk(pinfo):
+    try:
+        os.mkdir("/home")
+    except OSError:
+        pass    
+    devname = "/dev/%s" % pinfo.name
+    log.info("Mounting %s at /home..." % devname)
+    cmd = 'mount -t ext3 %s /home' % devname
+    r = runtimedcommand(cmd)
+    if r is None:
+        raise MHMountException("Mount of %s failed." % devname)    
+    return r
+
+  
 def movemountmirror(pinfo):
-    # mv -v /home /home.orig >> $LOGFILE  2>&1
-    #            mkdir -v /home >> $LOGFILE  2>&1
-    #            mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
-    #            cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
+    #          mv -v /home /home.orig >> $LOGFILE  2>&1
+    #          mkdir -v /home >> $LOGFILE  2>&1
+    #          mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
+    #          cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
     devname = "/dev/%s" % pinfo.name    
     if not os.path.isdir("/home.orig"):  
         os.rename("/home", "/home.orig")
     # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
     # So it may no longer have the original ephemeral partion. 
     # So we want to mount and re-populate.
-    try:
-        os.mkdir("/home")
-    except OSError:
-        pass    
-    log.info("Mounting %s at /home..." % devname)
-    cmd = 'mount -t ext3 %s /home' % devname
-    runtimedcommand(cmd)
-    
+    mountdisk(pinfo)
     log.info("Copying content from")
     cmd = "cp -avr /home.orig/* /home"
     runtimedcommand(cmd)
