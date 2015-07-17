@@ -29,19 +29,17 @@ import time
 import urllib
 
 
+# Globals
+logfile="/var/log/mounthome.log"
+log = None
+
+
 class MHMountException(Exception):
     def __init__(self, value):
         self.value = value
     def __str__(self):
         return repr(self.value)
 
-
-
-
-
-# Globals
-logfile="/var/log/mounthome.log"
-log = None
 
 class BlockDevice(object):
     
