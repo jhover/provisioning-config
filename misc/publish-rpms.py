@@ -32,6 +32,8 @@ RELEASEMAP={ 'Fedora release 14 (Laughlin)' : ('fedora','14'),
              'Red Hat Enterprise Linux Workstation release 6.5 (Santiago)' : ('rhel','6Workstation'),
              'Red Hat Enterprise Linux Workstation release 6.6 (Santiago)' : ('rhel','6Workstation'),            
              'Red Hat Enterprise Linux Workstation release 6.7 (Santiago)' : ('rhel','6Workstation'),
+             'Red Hat Enterprise Linux Server release 7.1 (Maipo)' : ('rhel','7Workstation'),
+              'Red Hat Enterprise Linux Server release 7.2 (Maipo)' : ('rhel','7Workstation'),
             }
 RPMGLOB='.*.noarch.rpm$'
 RPMRE=re.compile(RPMGLOB, re.IGNORECASE)

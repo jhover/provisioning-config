@@ -12,7 +12,7 @@ classes:
 motd::use_hiera: 'true'
 motd_messages:
   "motd1":
-    message: "This is the Hiera defaults message."
+    message: "Note: This is a dynamically generated virtual machine."
     order: '100'
 
 
