@@ -12,7 +12,7 @@ classes:
 motd::use_hiera: 'true'
 motd_messages:
   "motd1":
-    message: "Note: This is a dynamically generated virtual machine."
+    message: "Note: This is a dynamically generated virtual machine. Back up critical data."
     order: '100'
 
 

@@ -13,6 +13,7 @@
   
 :hierarchy:
    - userdata
+   - profile
    - local
    - defaults
 
