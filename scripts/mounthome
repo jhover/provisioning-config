@@ -137,26 +137,42 @@ def mounthome():
     global log
     
     unmount_auto()
-    log.debug("Getting block device info...")
-    blockdevs = getblockinfo()
-    log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
-    log.debug("Adding/checking lvm entries...")
-    blockdevs = checklvm(blockdevs)
-    log.debug("Device list after checklvm: %s" % blockdevs)
-    blockdevs = checkparts(blockdevs)
-    log.debug("Device list after checkparts: %s" % blockdevs)
-    log.debug("Selecting candidate.")
-    best = selectdevice(blockdevs)
-    if best:
-        log.info("Found candidate %s. Handling..." % best)
-        try:
-            mountdisk(best)
-            log.info("Successfully mounted existing filesystem.")
-        except :
-            log.info("No preexisting formatted filesystem. Formatting and mirroring.")
+    try:
+        mountraid()
+    except:
+        log.debug("Getting block device info...")
+        blockdevs = getblockinfo()
+        log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
+        log.debug("Adding/checking lvm entries...")
+        blockdevs = checklvm(blockdevs)
+        log.debug("Device list after checklvm: %s" % blockdevs)
+        blockdevs = checkparts(blockdevs)
+        log.debug("Device list after checkparts: %s" % blockdevs)
+        log.debug("Selecting candidate.")
+        best = selectdevices(blockdevs)
+        
+        if len(best) > 1:
+            log.info("Found multiple (%d) candidate(s) %s. Handling..." % (len(best), best) )
+            makevolume(best)
             formatdisk(best)
             movemountmirror(best)
-        log.info("Done")
+            log.info("Done")
+        else:
+            try:
+                mountdisk(best[0])
+                log.info("Successfully mounted existing filesystem.")
+            except :
+                log.info("No preexisting formatted filesystem. Formatting and mirroring.")
+                formatdisk(best[0])
+                movemountmirror(best[0])
+                log.info("Done") 
+            
+
+def mountraid():
+    # If raid partition already exists, mount it. 
+    pass
+
+
 
 def getpartitions():
     global log
@@ -253,7 +269,10 @@ def checkparts(devlist):
     return devlist
                 
   
-def selectdevice(devlist):
+def selectdevices(devlist):
+    #
+    # Returns list of available devices, sorted by size
+    #
     plist = devlist
     log.debug("Got list of %s block device objects" % len(plist))
     # ? /home already separate?
@@ -274,28 +293,72 @@ def selectdevice(devlist):
     from operator import attrgetter
     candidates.sort(key=attrgetter('size'), reverse=False)
 
-    best = candidates[0]
+    best = candidates
     log.info("Found candidate for /home: %s" % best )
     return best
     
 def formatdisk(pinfo):
     # mkfs.ext3 -F -L home /dev/$VD
     devname = "/dev/%s" % pinfo.name
-    cmd = "mkfs.ext3 -F -L home %s" % devname
+    cmd = "mkfs.ext4 -F -L home %s" % devname
     runtimedcommand(cmd)
 
 def mountdisk(pinfo):
+    #
+    # Tries to mount the device within pinfo
+    #    
     try:
         os.mkdir("/home")
     except OSError:
-        pass    
-    devname = "/dev/%s" % pinfo.name
+        pass
+    # First try to mount volume..
+    devname = "dev/md0"    
+    #devname = "/dev/%s" % pinfo.name
     log.info("Mounting %s at /home..." % devname)
-    cmd = 'mount -t ext3 %s /home' % devname
+    cmd = 'mount -t ext4 %s /home' % devname
     r = runtimedcommand(cmd)
+    if r is None:
+        devname = "/dev/%s" % pinfo.name
+        log.info("Mounting %s at /home..." % devname)
+        cmd = 'mount -t ext4 %s /home' % devname
+        r = runtimedcommand(cmd)  
     if r is None:
         raise MHMountException("Mount of %s failed." % devname)    
     return r
+
+def makevolume(pinfolist):
+    #
+    # Create LVM volume out of partitions in pinfolist
+    #
+    #   Cloudinit directives to create striped merged partition. 
+    #
+    #  for letter in f g; do parted -s -a optimal /dev/xvd$letter ; done;
+    #  for letter in f g; do parted -s -a optimal /dev/xvd$letter mklabel gpt; done;
+    #  for letter in f g; do parted -a optimal /dev/xvd$letter mkpart primary 0% 100%;done;
+    # mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2  /dev/xvdf1 /dev/xvdg1;
+    # mkfs.ext4 /dev/md0;
+    # mount -t ext4 /dev/md0 /s3cache_ssd;
+    #
+    # Returns a list consisting of one pinfo (the new volume)
+    if len(pinfolist) > 1:
+        devstr = " "
+        for pinfo in pinfolist:
+            cmd = "parted -s -a optimal /dev/%s" % pinfo.name
+            log.info("Running %s" % cmd)
+            runtimedcommand(cmd)
+            cmd = "parted -s -a optimal /dev/%s mklabel gpt" % pinfo.name
+            log.info("Running %s" % cmd)
+            runtimedcommand(cmd)
+            devstr += " /dev/%s1 " % pinfo.name
+            cmd = "parted -a optimal /dev/%s mkpart primary 0% 100%" % pinfo.name
+            log.info("Running %s" % cmd)
+            runtimedcommand(cmd)            
+            
+        log.info("Successfully created partitions. Making volume...")
+        cmd = "mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2 %s " % (len(pinfolist), devstr) 
+        log.info("Running %s" % cmd)
+        runtimedcommand(cmd)
+        log.info("Done.")   
 
   
 def movemountmirror(pinfo):
