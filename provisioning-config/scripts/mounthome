@@ -370,7 +370,7 @@ def makevolume(pinfolist):
             log.info("Running %s" % cmd)
             runtimedcommand(cmd)
             devstr += " /dev/%s1 " % pinfo.name
-            cmd = "parted -a optimal /dev/%s mkpart primary 0% 100%" % pinfo.name
+            cmd = "parted -a optimal /dev/%s mkpart primary 0%% 100%%" % pinfo.name
             log.info("Running %s" % cmd)
             runtimedcommand(cmd)            
             
