@@ -152,13 +152,14 @@ def mounthome():
         best = selectdevices(blockdevs)
         
         if len(best) > 1:
-            log.info("Found multiple (%d) candidate(s) %s. Handling..." % (len(best), best) )
+            log.info("Found multiple (%d) candidate(s) %s. Make raidset..." % (len(best), best) )
             makevolume(best)
             formatdisk(best)
             movemountmirror(best)
             log.info("Done")
         else:
             try:
+                log.info("Found single (%d) candidate(s) %s. Try to mount.." % (len(best), best) )
                 mountdisk(best[0])
                 log.info("Successfully mounted existing filesystem.")
             except :
@@ -166,13 +167,6 @@ def mounthome():
                 formatdisk(best[0])
                 movemountmirror(best[0])
                 log.info("Done") 
-            
-
-def mountraid():
-    # If raid partition already exists, mount it. 
-    pass
-
-
 
 def getpartitions():
     global log
@@ -303,6 +297,20 @@ def formatdisk(pinfo):
     cmd = "mkfs.ext4 -F -L home %s" % devname
     runtimedcommand(cmd)
 
+
+def mountraid():
+    # If raid partition already exists, mount it. 
+    # First try to mount volume..
+    devname = "dev/md0"    
+    #devname = "/dev/%s" % pinfo.name
+    log.info("Mounting %s at /home..." % devname)
+    cmd = 'mount -t ext4 %s /home' % devname
+    r = runtimedcommand(cmd)
+    if r is None:
+        raise MHMountException("Mount of %s failed." % devname)
+
+
+
 def mountdisk(pinfo):
     #
     # Tries to mount the device within pinfo
@@ -317,6 +325,7 @@ def mountdisk(pinfo):
     log.info("Mounting %s at /home..." % devname)
     cmd = 'mount -t ext4 %s /home' % devname
     r = runtimedcommand(cmd)
+    # Then try pinfo
     if r is None:
         devname = "/dev/%s" % pinfo.name
         log.info("Mounting %s at /home..." % devname)
@@ -359,7 +368,6 @@ def makevolume(pinfolist):
         log.info("Running %s" % cmd)
         runtimedcommand(cmd)
         log.info("Done.")   
-
   
 def movemountmirror(pinfo):
     #          mv -v /home /home.orig >> $LOGFILE  2>&1
