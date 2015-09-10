@@ -154,8 +154,8 @@ def mounthome():
         if len(best) > 1:
             log.info("Found multiple (%d) candidate(s) %s. Make raidset..." % (len(best), best) )
             makevolume(best)
-            formatdisk(best)
-            movemountmirror(best)
+            formatraid()
+            movemountmirrorraid()
             log.info("Done")
         else:
             try:
@@ -282,7 +282,7 @@ def selectdevices(devlist):
                 candidates.append(p)
     if len(candidates) < 1:
         log.info("No unmounted partitions/disks.")
-        return None
+        return []
     log.debug("Got list of %s unmounted regular partitions/disks" % len(candidates))
     from operator import attrgetter
     candidates.sort(key=attrgetter('size'), reverse=False)
@@ -297,6 +297,11 @@ def formatdisk(pinfo):
     cmd = "mkfs.ext4 -F -L home %s" % devname
     runtimedcommand(cmd)
 
+
+def formatraid():
+    # mkfs.ext3 -F -L home /dev/$VD
+    cmd = "mkfs.ext4 -F -L home /dev/md0" 
+    runtimedcommand(cmd)
 
 def mountraid():
     # If raid partition already exists, mount it. 
@@ -385,7 +390,23 @@ def movemountmirror(pinfo):
     cmd = "cp -avr /home.orig/* /home"
     runtimedcommand(cmd)
     log.info("Done.")    
-        
+
+def movemountmirrorraid():
+    #          mv -v /home /home.orig >> $LOGFILE  2>&1
+    #          mkdir -v /home >> $LOGFILE  2>&1
+    #          mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
+    #          cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
+    devname = "/dev/md0"    
+    if not os.path.isdir("/home.orig"):  
+        os.rename("/home", "/home.orig")
+    # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
+    # So it may no longer have the original ephemeral partion. 
+    # So we want to mount and re-populate.
+    mountraid()
+    log.info("Copying content from")
+    cmd = "cp -avr /home.orig/* /home"
+    runtimedcommand(cmd)
+    log.info("Done.")        
 
 def runtimedcommand(command):
     global log
