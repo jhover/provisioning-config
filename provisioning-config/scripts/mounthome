@@ -312,7 +312,7 @@ def mountraid():
     except OSError:
         pass
     # First try to mount volume..
-    devname = "dev/md0"    
+    devname = "/dev/md0"    
     #devname = "/dev/%s" % pinfo.name
     log.info("Mounting %s at /home..." % devname)
     cmd = 'mount -t ext4 %s /home' % devname
