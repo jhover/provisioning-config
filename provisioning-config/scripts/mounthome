@@ -273,7 +273,7 @@ def selectdevices(devlist):
     for p in plist:
         if p.mountpoint == "/home":
             log.info("/home already mounted: %s" % p.name)
-            return None
+            return []
     # Select from only partitions marked 'part' that are currently unmounted...
     candidates = []
     for p in plist:
