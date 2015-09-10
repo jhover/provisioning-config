@@ -370,8 +370,8 @@ def makevolume(pinfolist):
             log.info("Running %s" % cmd)
             runtimedcommand(cmd)            
             
-        log.info("Successfully created partitions. Making volume...")
-        cmd = "mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2 %s " % (len(pinfolist), devstr) 
+        log.info("Successfully created partitions. Making volume out of devices: %s" % devstr)
+        cmd = "mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=%s %s " % (len(pinfolist), devstr) 
         log.info("Running %s" % cmd)
         runtimedcommand(cmd)
         log.info("Done.")   
