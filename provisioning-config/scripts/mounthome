@@ -302,6 +302,7 @@ def formatdisk(pinfo):
 
 def formatraid():
     # mkfs.ext3 -F -L home /dev/$VD
+    time.sleep(2)
     cmd = "mkfs.ext4 -F -L home /dev/md0" 
     runtimedcommand(cmd)
 
@@ -372,9 +373,11 @@ def makevolume(pinfolist):
             devstr += " /dev/%s1 " % pinfo.name
             cmd = "parted -a optimal /dev/%s mkpart primary 0%% 100%%" % pinfo.name
             log.info("Running %s" % cmd)
-            runtimedcommand(cmd)            
+            runtimedcommand(cmd)
+            time.sleep(2)            
             
         log.info("Successfully created partitions. Making volume out of devices: %s" % devstr)
+        time.sleep(2)
         cmd = "mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=%s %s " % (len(pinfolist), devstr) 
         log.info("Running %s" % cmd)
         runtimedcommand(cmd)
