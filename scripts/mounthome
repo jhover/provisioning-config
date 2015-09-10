@@ -307,6 +307,10 @@ def formatraid():
 
 def mountraid():
     # If raid partition already exists, mount it. 
+    try:
+        os.mkdir("/home")
+    except OSError:
+        pass
     # First try to mount volume..
     devname = "dev/md0"    
     #devname = "/dev/%s" % pinfo.name
@@ -398,12 +402,15 @@ def movemountmirrorraid():
     #          mkdir -v /home >> $LOGFILE  2>&1
     #          mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
     #          cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
+    
+    
     devname = "/dev/md0"    
     if not os.path.isdir("/home.orig"):  
         os.rename("/home", "/home.orig")
     # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
     # So it may no longer have the original ephemeral partion. 
     # So we want to mount and re-populate.
+    
     mountraid()
     log.info("Copying content from")
     cmd = "cp -avr /home.orig/* /home"
