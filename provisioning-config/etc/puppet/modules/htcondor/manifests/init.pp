@@ -1,262 +1,233 @@
-# Class: htcondor
+# == Class: htcondor
 #
-# This module manages htcondor
+# Full description of class htcondor here.
 #
-# == Parameters:
+# === Parameters
 #
-# [*accounting_groups*]
-# Accounting grous (and subgroups) for fair share configuration.
-# Requires use_accounting_groups = true
-# Default just provides an example for what needs to be specified
+# Document parameters here.
 #
-# [*cluster_has_multiple_domains*]
-# Specifies if the cluster has more than one domain. If true it will set
-# TRUST_UID_DOMAIN = True in 10_security.config
-# Default: false
-#
-# [*collector_name*]
-# Sets COLLECTOR_NAME in 22_manager.config
-# Default: 'Personal Condor at $(FULL_HOSTNAME)'
-#
-# [*computing_elements*]
-# List of CEs that have access to this HTCondor pool
-#
-# [*condor_admin_email*]
-# Contact email for the pool admin. Sets CONDOR_ADMIN.
-#
-# [*custom_attribute*]
-# Can be used to specify a ClassAd via custom_attribute = True. This is useful
-# when creating queues with ARC CEs
-# Default: NORDUGRID_QUEUE
-#
-# [*high_priority_groups*]
-# A hash of groups with high priority. It is used for the group sorting
-# expression for condor. Groups with lower value are considered first.
-# example:
-# $high_priority_groups = {
-#                         'cms.admin' => -30,
-#                         'ops'       => -20,
-#                         'dteam'     => -10,
-#                         }
-# This will consider the group cms.admin first, followed by ops and dteam.
-#
-# [*include_username_in_accounting*]
-# Bool. If false the accounting groups used are of the form
-# group_<group_name>.<subgroup>
-# and if true
-# group_<group_name>.<subgroup>.<user name>
-#
-# [*install_repositories*]
-# Bool to install repositories or not
-#
-# [*is_ce*]
-# If machine is a computing element or a scheduler (condor term)
+# [*is_submit*]
+# If machine is a schedd
 #
 # [*is_manager*]
-# If machine is a manager or a negotiator (condor term)
+# If machine is a central manager and negotiator 
 #
-# [*is_worker*]
-# If the machine is a worker node
+# [*is_execute*]
+# If the machine is a startd
 #
-# [*machine_owner*]
-# The owner of the machine (e.g. an accounting group)
+# 
+# === Authors
 #
-# [*managers*]
-# List of condor managers
+# John Hover <jhover@bnl.gov>
 #
-# [*number_of_cpus*]
-# Number of CPUs available for condor scheduling. This is set for worker nodes
-# only
+# === Copyright
 #
-# [*pool_password*]
-# Path to pool password file.
+# Copyright 2015 John Hover, unless otherwise noted.
 #
-# [*uid_domain*]
-# Condor UID_DOMAIN
-# Default: example.com
+# 
 #
-# [*use_accounting_groups*]
-# If accounting groups should be used (fair shares)
-#
-# [*worker_nodes*]
-# List of worker nodes
-#
-#
-# Templates parameters : these parameters allow for user to override the default templates, for their needs, ie for instance for a different fairshare
-#
-#  $template_config_local
-#  $template_security
-#  $template_resourcelimits
-#  $template_schedd
-#  $template_fairshares
-#  $template_manager
-#  $template_workernode
-#
-# Actions:
-#
-# Requires: see Modulefile
-#
-# Sample Usage:
-class htcondor (
-  $accounting_groups     = {
-    'CMS'            => {
-      priority_factor => 10000.00,
-      dynamic_quota   => 0.80,
+
+class htcondor ( $is_execute        = true,
+	             $is_submit         = false,
+	             $is_manager        = false,
+	             $use_password_auth = true,
+	             $use_gsi_auth      = false,
+	             $condor_password   = 'changeme',
+	             $collector_host    = $::fqdn,
+	             $collector_port    = 9618,
+	             $randomize_collector_port = false,
+                 $collector_port_low = 29661,
+	             $collector_port_high = 29680,
+	             $local_dir         = '/home/condor',
+	             $use_jobwrapper    = true,
+	             
+	            ) 	
+	{
+      $major_release = $::operatingsystemmajrelease
+   
+		yumrepo { 'htcondor-stable':
+		    descr    => "HTCondor Stable RPM Repository for Redhat Enterprise Linux ${major_release}",
+			  baseurl  => "http://research.cs.wisc.edu/htcondor/yum/stable/rhel${major_release}",
+			  enabled  => 1,
+			  gpgcheck => 0,
+			  exclude  => 'condor.i386, condor.i686',
+			  before => [Package['condor']],
+		}
+
+    package {'condor':
+        ensure => installed,
     }
-    ,
-    'CMS.production' => {
-      priority_factor => 10000.00,
-      dynamic_quota   => 0.95,
+
+    file { ['/etc/condor', '/etc/condor/config.d']:
+        ensure  => directory,
+        owner   => 'root',
+        group   => 'root',
+        recurse => true,
+    }    
+
+          
+    file {'/etc/condor/condor_config.local':
+        ensure  => file,
+        owner   => 'root',
+        content => epp('htcondor/condor_config.local.epp'),
+        notify  => Service["condor"], 
     }
-  }
-  ,
-  $cluster_has_multiple_domains   = false,
-  $collector_name        = 'Personal Condor at $(FULL_HOSTNAME)',
-  $email_domain          = 'localhost',
-  $computing_elements    = [],
-  $condor_admin_email    = 'root@mysite.org',
-  $condor_priority       = '99',
-  $condor_version        = 'present',
-  $custom_attribute      = 'NORDUGRID_QUEUE',
-  $enable_multicore      = false,
-  $enable_healthcheck    = false,
-  $high_priority_groups  = {
-    'cms.admin' => -30,
-    'ops'       => -20,
-    'dteam'     => -10,
-  }
-  ,
-  $priority_halflife     = 43200,
-  $default_prio_factor   = 100000.00,
-  $group_accept_surplus  = true,
-  $group_autoregroup     = true,
-  $health_check_script   =  "puppet:///modules/${module_name}/healhcheck_wn_condor",
-  $include_username_in_accounting = false,
-  $use_pkg_condor_config = false,
-  $install_repositories  = true,
-  $dev_repositories      = false,
-  $use_pkg_condor_config = false,
-  $is_ce                 = false,
-  $is_manager            = false,
-  $is_worker             = false,
-  $machine_owner         = 'physics',
-  $managers              = [],
-  $number_of_cpus        = undef,
-  $partitionable_slots   = true,
-  $request_memory        = true,
-  $use_strong_security   = false,
-  $gsi_dn_prefix         = "/DC=ch/DC=cern/OU=computers/CN=",
-  $gsi_dn_suffix         = ".*",
-  $pool_home             = '/pool',
-  $pool_create           = true,
-  $queues                     = hiera('grid_queues', undef),
-  $periodic_expr_interval     = 60,
-  $max_periodic_expr_interval = 1200,
-  $remove_held_jobs_after     = 1200,
-  $leave_job_in_queue         = undef,
-  $ganglia_cluster_name  = false,
-  $pool_password         = "puppet:///modules/${module_name}/pool_password",
-  $uid_domain            = 'example.com',
-  $default_domain_name   = $uid_domain,
-  $filesystem_domain     = $uid_domain,
-  $use_accounting_groups = false,
-  $worker_nodes          = [],
 
-  #default params
-  $condor_user = root,
-  $condor_group= root,
-  $condor_uid  = 0,
-  $condor_gid  = 0,
+    file {'/etc/condor/config.d/30master.config':
+        ensure  => file,
+        owner   => 'root',
+        content => epp('htcondor/30master.config.epp'),
+        notify  => Service["condor"],  
+    }
 
-  #template selection. Allow for user to override
-  $template_config_local    = "${module_name}/condor_config.local.erb",
-  $template_security        = "${module_name}/10_security.config.erb",
-  $template_resourcelimits  = "${module_name}/12_resourcelimits.config.erb",
-  $template_queues          = "${module_name}/13_queues.config.erb",
-  $template_schedd          = "${module_name}/21_schedd.config.erb",
-  $template_fairshares      = "${module_name}/11_fairshares.config.erb",
-  $template_manager         = "${module_name}/22_manager.config.erb",
-  $template_ganglia         = "${module_name}/23_ganglia.config.erb",
-  $template_workernode      = "${module_name}/20_workernode.config.erb",
-  $template_defrag          = "${module_name}/33_defrag.config.erb",
-  $template_certificate_mapfile = "${module_name}/certificate_mapfile.erb",
+    if $is_execute {
+        notify { 'This host will be an execute node.': withpath => true }    
+        
+        file { [ "${local_dir}" , "${local_dir}/execute" ]:
+            ensure  => directory,
+            owner   => 'condor',
+            group   => 'condor',
+            recurse => true,
+        }    
+                    
+        file {'/etc/condor/config.d/50startd.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/50startd.config.epp'),
+            notify  => Service["condor"],  
+        }
+        
+        file {'/etc/condor/config.d/51startd_job.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/51startd_job.config.epp'),
+            notify  => Service["condor"],  
+        }
+        
+        file {'/etc/condor/config.d/53startd_partslots.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/53startd_partslots.config.epp'),
+            notify  => Service["condor"],  
+        }
+        
+        user {["slot1","slot2","slot3","slot4","slot5", "slot6","slot7","slot8", "slot9", "slot10",
+            "slot11","slot12","slot13","slot14","slot15", "slot16","slot17","slot18", "slot19", "slot20",
+            "slot21","slot22","slot23","slot24","slot25", "slot26","slot27","slot28", "slot29", "slot30",
+            "slot31","slot32" ] :
+            ensure     => "present",
+            managehome => true,
+        }
+        
+        if $use_jobwrapper {
+            file {'/usr/libexec/jobwrapper.sh':
+                ensure => file,
+                owner => 'root',
+                mode  => '0555',
+                source => "puppet:///modules/htcondor/jobwrapper.sh"
+            }
+        }
+    }
+    
 
-  ) {
-  class { 'htcondor::repositories':
-    install_repos   => $install_repositories,
-    dev_repos       => $dev_repositories,
-    condor_priority => $condor_priority,
-  }
+    if $is_manager {
+        notify { 'This host will (also) be a central manager.': withpath => true }    
+    
+        file {'/etc/condor/config.d/40cm.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/40cm.config.epp'), 
+            notify  => Service["condor"], 
+        }         
+        file {'/etc/condor/config.d/45cm_depthfirst.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/45cm_depthfirst.config.epp'),
+            notify  => Service["condor"],  
+        }
 
-  class { 'htcondor::install':
-    ensure => $condor_version,
-    dev_repos => $dev_repositories,
-  }
+    }
+          
 
-  class { 'htcondor::config':
-    accounting_groups   => $accounting_groups,
-    cluster_has_multiple_domains   => $cluster_has_multiple_domains,
-    collector_name      => $collector_name,
-    email_domain        => $email_domain,
-    computing_elements  => $computing_elements,
-    condor_admin_email  => $condor_admin_email,
-    custom_attribute    => $custom_attribute,
-    enable_multicore    => $enable_multicore,
-    enable_healthcheck  => $enable_healthcheck,
-    high_priority_groups           => $high_priority_groups,
-    priority_halflife   => $priority_halflife,
-    default_prio_factor => $default_prio_factor,
-    group_accept_surplus=> $group_accept_surplus,
-    group_autoregroup   => $group_autoregroup,
-    health_check_script => $health_check_script,
-    include_username_in_accounting => $include_username_in_accounting,
-    use_pkg_condor_config => $use_pkg_condor_config,
-    is_ce               => $is_ce,
-    is_manager          => $is_manager,
-    is_worker           => $is_worker,
-    machine_owner       => $machine_owner,
-    managers            => $managers,
-    number_of_cpus      => $number_of_cpus,
-    partitionable_slots => $partitionable_slots,
-    request_memory      => $request_memory,
-    use_strong_security => $use_strong_security,
-    gsi_dn_prefix  => $gsi_dn_prefix,
-    gsi_dn_suffix  => $gsi_dn_suffix,
-    pool_home           => $pool_home,
-    queues              => $queues,
-    periodic_expr_interval     => $periodic_expr_interval,
-    max_periodic_expr_interval => $max_periodic_expr_interval,
-    remove_held_jobs_after     => $remove_held_jobs_after,
-    leave_job_in_queue         => $leave_job_in_queue,
-    ganglia_cluster_name       => $ganglia_cluster_name,
-    pool_password       => $pool_password,
-    pool_create         => $pool_create,
-    uid_domain          => $uid_domain,
-    default_domain_name => $default_domain_name,
-    filesystem_domain   => $filesystem_domain,
-    use_accounting_groups          => $use_accounting_groups,
-    worker_nodes        => $worker_nodes,
-    condor_user         => $condor_user,
-    condor_group        => $condor_group,
-    condor_uid          => $condor_uid,
-    condor_gid          => $condor_gid,
-    # template selection. Allow for user to override
-    template_config_local          => $template_config_local,
-    template_security   => $template_security,
-    template_resourcelimits        => $template_resourcelimits,
-    template_queues     => $template_queues,
-    template_schedd     => $template_schedd,
-    template_fairshares => $template_fairshares,
-    template_manager    => $template_manager,
-    template_workernode => $template_workernode,
-    template_ganglia    => $template_ganglia,
-    template_defrag     => $template_defrag,
-    template_certificate_mapfile => $template_certificate_mapfile,
-  }
-
-  class { 'htcondor::service':
-  }
-
-  Class['htcondor::repositories'] -> Class['htcondor::install'] -> Class['htcondor::config'
-    ] -> Class['htcondor::service']
+    if $is_submit {
+        notify { 'This host will (also) be a submit node.': withpath => true }          
+    
+        file {'/etc/condor/config.d/60schedd.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/60schedd.config.epp'),
+            notify  => Service["condor"],  
+        }
+    }    
+    
+    if $use_password_auth {
+        notify { 'Using password authentication.': withpath => true }    
+    
+        file {'/usr/bin/make_condor_password':
+            ensure => file,
+            owner => 'root',
+            mode  => '0555',
+            source => "puppet:///modules/htcondor/make_condor_password"
+        }
+        
+        file {'/etc/condor/condor_password':
+            ensure  => file,
+            owner   => 'root',
+            mode  => '0600',
+            content => epp('htcondor/condor_password.epp'), 
+            notify => [
+                Exec['make_condor_password'],
+                Service["condor"],
+                    ]
+            }
+           
+        file {'/etc/condor/config.d/70sec_password.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/70sec_password.config.epp'),
+            notify  => Service["condor"],  
+        }
+        
+        exec { "make_condor_password":
+            command => "make_condor_password",
+            path    => "/usr/local/bin/:/bin/:/usr/sbin:/usr/bin",
+            # path    => [ "/usr/local/bin/", "/bin/"],  # alternative syntax
+        }
+    }
+   
+    file {'/etc/condor/config.d/72network.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/72network.config.epp'),
+            notify  => Service["condor"],  
+    }
+    
+    if $randomize_collector_port {
+        # sets collector port to random (but host stable) number between high and low. 
+        $set_collector_port = fqdn_rand( $collector_port_high - $collector_port_low ) + $collector_port_low
+        notify { "Collector port randomized to ${set_collector_port}" : withpath => true }
+    }
+    else {
+        $set_collector_port = $collector_port
+        notify { "Collector port is ${set_collector_port}": withpath => true }
+    }
+    
+    file {'/etc/condor/config.d/80collector.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/80collector.config.epp'), 
+            notify  => Service["condor"], 
+        }  
+        
+    file {'/etc/condor/config.d/90logdebug.config':
+        ensure  => file,
+        owner   => 'root',
+        content => epp('htcondor/90logdebug.config.epp'), 
+        notify  => Service["condor"], 
+    }
+ 
+	service {'condor':
+			ensure    => running,
+			enable    => true,
+    }
 }
