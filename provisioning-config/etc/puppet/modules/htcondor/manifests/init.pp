@@ -225,6 +225,15 @@ class htcondor ( $is_execute        = true,
         content => epp('htcondor/90logdebug.config.epp'), 
         notify  => Service["condor"], 
     }
+    
+    if $::ec2_instance_id != undef { 
+        file {'/etc/condor/config.d/92ec2attributes.config':
+            ensure  => file,
+            owner   => 'root',
+            content => epp('htcondor/92ec2attributes.config.epp'), 
+            notify  => Service["condor"], 
+        }
+    }
  
 	service {'condor':
 			ensure    => running,
