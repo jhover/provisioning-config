@@ -62,7 +62,7 @@ def puppetapply():
     global puppetlog
     log.info("Running puppet apply...")
     os.chdir("/etc/puppet")
-    runtimedcommand("puppet apply --verbose --modulepath ./modules manifests/site.pp >> %s " % puppetlog  )
+    runtimedcommand("puppet apply --verbose --parser future --modulepath ./modules manifests/site.pp >> %s " % puppetlog  )
 
 
 def runtimedcommand(command):
