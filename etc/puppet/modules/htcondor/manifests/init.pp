@@ -41,18 +41,17 @@ class htcondor ( $is_execute        = true,
 	             $local_dir         = '/home/condor',
 	             $use_jobwrapper    = true,
 	             
-	            ) 	
-	{
-      $major_release = $::operatingsystemmajrelease
+	            ) {
+    $major_release = $::operatingsystemmajrelease
    
-		yumrepo { 'htcondor-stable':
-		    descr    => "HTCondor Stable RPM Repository for Redhat Enterprise Linux ${major_release}",
-			  baseurl  => "http://research.cs.wisc.edu/htcondor/yum/stable/rhel${major_release}",
-			  enabled  => 1,
-			  gpgcheck => 0,
-			  exclude  => 'condor.i386, condor.i686',
-			  before => [Package['condor']],
-		}
+	yumrepo { 'htcondor-stable':
+	    descr    => "HTCondor Stable RPM Repository for Redhat Enterprise Linux ${major_release}",
+		baseurl  => "http://research.cs.wisc.edu/htcondor/yum/stable/rhel${major_release}",
+		enabled  => 1,
+		gpgcheck => 0,
+		exclude  => 'condor.i386, condor.i686',
+		before => [Package['condor']],
+	}
 
     package {'condor':
         ensure => installed,
