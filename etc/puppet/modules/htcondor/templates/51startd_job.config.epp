@@ -1,6 +1,6 @@
 # This file is managed by Puppet - DO NOT EDIT!
 # Job environment config
-<% if $use_jobwrapper == true { -%>
+<% if $htcondor::use_jobwrapper { -%>
 USER_JOB_WRAPPER = /usr/libexec/jobwrapper.sh
 <% } -%>
 EXECUTE = <%= $htcondor::local_dir %>/execute
