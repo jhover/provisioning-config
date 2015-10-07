@@ -110,7 +110,7 @@ def setuplogging():
             formatstr = FORMAT26
     log = logging.getLogger()    
     hdlr = logging.StreamHandler(sys.stdout)
-    formatter = logging.Formatter(FORMAT23)
+    formatter = logging.Formatter(formatstr)
     hdlr.setFormatter(formatter)
     log.addHandler(hdlr)
     # Handle file-based logging.
@@ -138,37 +138,53 @@ def mounthome():
     
     unmount_auto()
     try:
-        mountraid()
+        mountvolgroup()
     except:
-        log.debug("Getting block device info...")
-        blockdevs = getblockinfo()
-        log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
-        log.debug("Adding/checking lvm entries...")
-        blockdevs = checklvm(blockdevs)
-        log.debug("Device list after checklvm: %s" % blockdevs)
-        blockdevs = checkparts(blockdevs)
-        log.debug("Device list after checkparts: %s" % blockdevs)
-        log.debug("Selecting candidate.")
+        log.info("Getting block devices.")
+        blockdevs = getblockdevs()
+         
+        log.info("Selecting candidate.")
         best = selectdevices(blockdevs)
         
         if len(best) > 1:
-            log.info("Found multiple (%d) candidate(s) %s. Make raidset..." % (len(best), best) )
-            makevolume(best)
-            formatraid()
-            movemountmirrorraid()
-            log.info("Done")
-        elif len(best) ==1:
-            try:
-                log.info("Found single (%d) candidate(s) %s. Try to mount.." % (len(best), best) )
-                movemountmirror(best[0])
-                log.info("Successfully mounted existing filesystem.")
-            except :
-                log.info("No preexisting formatted filesystem. Formatting and mirroring.")
-                formatdisk(best[0])
-                movemountmirror(best[0])
-                log.info("Done") 
+            log.info("Found multiple (%d) candidate(s) %s. Make volgroup..." % (len(best), best) )
+            handlevolgroup(best)
+        elif len(best) == 1:
+            log.info("Found single (%d) candidate(s) %s. Try to mount.." % (len(best), best) )
+            handlepartition(best)
         else:
             log.info("Found no candidates, or /home is already mounted. Done.")
+
+def handlepartition(best):
+    try:    
+        movemountmirror(best[0])
+        log.info("Successfully mounted existing filesystem.")
+    except :
+        log.info("No preexisting formatted filesystem. Formatting and mirroring.")
+        formatdisk(best[0])
+        movemountmirror(best[0])
+        log.info("Done") 
+
+def handlevolgroup(best):
+    global log
+    log.info("Handling volume group %s" % best)
+    makevolume(best)
+    formatvolgroup()
+    movemountmirrorvolgroup()
+    log.info("Done")
+
+
+def getblockdevs():
+    global log
+    log.debug("Getting block device info...")
+    blockdevs = getblockinfo()
+    log.debug("Got %d blockdevs: %s" % (len(blockdevs), blockdevs ) )
+    log.debug("Adding/checking lvm entries...")
+    blockdevs = checklvm(blockdevs)
+    log.debug("Device list after checklvm: %s" % blockdevs)
+    blockdevs = checkparts(blockdevs)
+    log.debug("Device list after checkparts: %s" % blockdevs)
+    return blockdevs
 
 def getpartitions():
     global log
@@ -300,13 +316,13 @@ def formatdisk(pinfo):
     runtimedcommand(cmd)
 
 
-def formatraid():
+def formatvolgroup():
     # mkfs.ext3 -F -L home /dev/$VD
     time.sleep(2)
     cmd = "mkfs.ext4 -F -L home /dev/md0" 
     runtimedcommand(cmd)
 
-def mountraid():
+def mountvolgroup():
     # If raid partition already exists, mount it. 
     try:
         os.mkdir("/home")
@@ -384,6 +400,7 @@ def makevolume(pinfolist):
         log.info("Done.")   
   
 def movemountmirror(pinfo):
+    global log
     #          mv -v /home /home.orig >> $LOGFILE  2>&1
     #          mkdir -v /home >> $LOGFILE  2>&1
     #          mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
@@ -403,11 +420,8 @@ def movemountmirror(pinfo):
     runtimedcommand(cmd)
     log.info("Done.")    
 
-def movemountmirrorraid():
-    #          mv -v /home /home.orig >> $LOGFILE  2>&1
-    #          mkdir -v /home >> $LOGFILE  2>&1
-    #          mount -t ext3 /dev/$VD /home >> $LOGFILE  2>&1
-    #          cp -avr /home.orig/* /home   >> $LOGFILE  2>&1
+def movemountmirrorvolgroup():
+    global log
     devname = "/dev/md0"    
     if not os.path.isdir("/home.orig"):  
         log.info("/home.orig doesn't exist, moving /home...")  
