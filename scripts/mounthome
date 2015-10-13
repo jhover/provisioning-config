@@ -98,6 +98,8 @@ def setuplogging():
     FORMAT24=FORMAT23
     FORMAT25="[%(levelname)s] %(asctime)s %(module)s.%(funcName)s(): %(message)s"
     FORMAT26=FORMAT25
+    FORMAT27=FORMAT26
+    FORMAT28=FORMAT27
     
     if major == 2:
         if minor ==3:
@@ -108,6 +110,8 @@ def setuplogging():
             formatstr = FORMAT25
         elif minor == 6:
             formatstr = FORMAT26
+        elif minor == 7:
+            formatstr = FORMAT27
     log = logging.getLogger()    
     hdlr = logging.StreamHandler(sys.stdout)
     formatter = logging.Formatter(formatstr)
