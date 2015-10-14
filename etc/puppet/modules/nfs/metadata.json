@@ -1,0 +1,52 @@
+{
+  "name": "ULHPC-nfs",
+  "version": "0.1.5",
+  "author": "S. Varrette, H. Cartiaux, V. Plugaru, S. Diehl aka. UL HPC Management Team",
+  "summary": "Configure and manage NFS (client and/or server)",
+  "license": "GPL-3.0",
+  "source": "https://github.com/ULHPC/puppet-nfs",
+  "project_page": "https://github.com/ULHPC/puppet-nfs",
+  "issues_url": "https://github.com/ULHPC/puppet-nfs/issues",
+  "dependencies": [
+    {"name":"puppetlabs-stdlib","version_requirement":">=4.2.2 <5.0.0"},
+    {"name":"puppetlabs/concat","version_requirement":">= 1.2.0 < 2.0.0"},
+    {"name":"ULHPC/sysctl","version_requirement":">= 0.1.7 < 1.0.0"}
+  ],
+  "mail": "hpc-sysadmins@uni.lu",
+  "description": "Configure and manage NFS (client and/or server)",
+  "docs_project": "ulhpc-puppet-nfs",
+  "forge_url": "https://forge.puppetlabs.com/ULHPC/nfs",
+  "operatingsystem_support": [
+    {
+      "operatingsystem": "Debian",
+      "operatingsystemrelease": [
+        "7"
+      ]
+    },
+    {
+      "operatingsystem": "Centos",
+      "operatingsystemrelease": [
+        "7",
+        "8"
+      ]
+    }
+  ],
+  "tags": [
+    "nfs"
+  ],
+  "classes": [
+    "nfs",
+    "nfs::client",
+    "nfs::client::common",
+    "nfs::client::common::debian",
+    "nfs::client::common::redhat",
+    "nfs::params",
+    "nfs::server",
+    "nfs::server::common",
+    "nfs::server::common::debian",
+    "nfs::server::common::redhat"
+  ],
+  "definitions": [
+    "nfs::server::export"
+  ]
+}
