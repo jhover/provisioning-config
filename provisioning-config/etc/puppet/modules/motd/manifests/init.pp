@@ -35,7 +35,7 @@ class motd(
   $ensure    = 'present',
   $motd_file = $::motd::params::config_file,
   $supported = $::motd::params::supported,
-  $use_hiera = 'true'
+  $use_hiera = 'false'
 ) inherits motd::params {
 
   if $supported == 'true' {
