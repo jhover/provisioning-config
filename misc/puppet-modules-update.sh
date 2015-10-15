@@ -1,10 +1,11 @@
 #!/bin/bash
 #
 # STANDARD         PUPPETFORGE
-# boogy-motd X
+# boogy-motd 
 # deric-acccounts
 # CERNops-cvmfs
 # brutus777-authorized_keys
+# echocat-nfs
 #  
 # DEPS
 # puppetlabs-concat
