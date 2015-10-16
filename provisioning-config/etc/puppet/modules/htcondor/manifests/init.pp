@@ -27,7 +27,7 @@
 # 
 #
 
-class htcondor ( $is_execute        = true,
+class htcondor ( $is_execute        = false,
 	             $is_submit         = false,
 	             $is_manager        = false,
 	             $use_password_auth = true,
@@ -40,6 +40,7 @@ class htcondor ( $is_execute        = true,
 	             $collector_port_high = 29680,
 	             $local_dir         = '/home/condor',
 	             $use_jobwrapper    = true,
+	             $use_slotusers     = true,
 	             
 	            ) {
     $major_release = $::operatingsystemmajrelease
@@ -129,8 +130,7 @@ class htcondor ( $is_execute        = true,
     }
     
 
-    if $is_manager {
-        notify { 'This host will (also) be a central manager.': withpath => true }    
+    if $is_manager {    
     
         file {'/etc/condor/config.d/40cm.config':
             ensure  => file,

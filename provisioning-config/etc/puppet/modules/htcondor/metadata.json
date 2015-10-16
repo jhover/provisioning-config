@@ -1,16 +1,14 @@
 {
   "name": "racf-htcondor",
-  "version": "0.1.1",
+  "version": "0.1.2",
   "author": "jhover@bnl.gov",
   "summary": "Configure HTCondor services.",
   "license": "Apache-2.0",
   "source": "https://svn.usatlas.bnl.gov/svn/griddev/",
-  "issues_url": "https://www.racf.bnl.gov/experiments/usatlas/griddev",
   "project_page": null,
+  "issues_url": "https://www.racf.bnl.gov/experiments/usatlas/griddev",
   "dependencies": [
-    {
-      "version_requirement": ">= 1.0.0",
-      "name": "puppetlabs-stdlib"
-    }
+    {"name":"puppetlabs-stdlib","version_requirement":">= 1.0.0"}
   ]
 }
+
