@@ -6,6 +6,11 @@
 classes:
   - motd
   - authorized_keys
+  - selinux
+  - htcondor
+  - accounts
+  - nfs::server
+  - nfs::client
 
 # boogy-motd
 motd::use_hiera: 'true'
@@ -81,6 +86,7 @@ authorized_keys::rolesauth:
 #nfs::server::export: 
 #    /home/nfs:
 #         clients: "172.11.0.0/24(rw,insecure,async,no_root_squash) localhost(rw)"
+#         perms: "0777"
          
 #echocat-nfs 
 # client
