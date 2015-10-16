@@ -1,4 +1,4 @@
-class nfs::client::debian::service {
+class nfs::client::ubuntu::service {
 
   service { 'rpcbind':
     ensure    => running,
@@ -6,10 +6,9 @@ class nfs::client::debian::service {
     hasstatus => false,
   }
 
-  if $nfs::client::debian::nfs_v4 {
+  if $nfs::client::ubuntu::nfs_v4 {
     service { 'idmapd':
       ensure    => running,
-      name      => 'nfs-common',
       subscribe => Augeas['/etc/idmapd.conf', '/etc/default/nfs-common'],
     }
   } else {

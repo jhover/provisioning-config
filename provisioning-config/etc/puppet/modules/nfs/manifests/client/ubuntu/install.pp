@@ -1,4 +1,4 @@
-class nfs::client::debian::install {
+class nfs::client::ubuntu::install {
 
   package { 'rpcbind':
     ensure => installed,

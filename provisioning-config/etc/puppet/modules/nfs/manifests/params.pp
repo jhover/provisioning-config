@@ -9,11 +9,11 @@ class nfs::params (
   # Somehow the ::osfamily fact doesnt exist on some systems
 
   case $::operatingsystem {
-    'centos', 'redhat', 'scientific', 'fedora', 'SLC', 'OracleLinux', 'Amazon' : { $osfamily = 'redhat' }
-    'debian', 'Ubuntu' : { $osfamily = 'debian' }
-    'windows'          : { fail('fail!11') }
-    'darwin'           : { $osfamily = 'darwin' }
-    'gentoo'           : { $osfamily = 'gentoo' }
-    default            : { fail("OS: ${::operatingsystem} not supported") }
+    'CentOS', 'RedHat', 'scientific', 'Fedora', 'SLC', 'OracleLinux', 'Amazon' : { $osfamily = 'redhat' }
+    'Debian'  : { $osfamily = 'debian' }
+    'Ubuntu'  : { $osfamily = 'ubuntu' }
+    'darwin'  : { $osfamily = 'darwin' }
+    'gentoo'  : { $osfamily = 'gentoo' }
+    default   : { fail("OS: ${::operatingsystem} not supported") }
   }
 }

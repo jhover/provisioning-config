@@ -15,7 +15,7 @@ describe 'nfs::server' do
 
   context "operatingsysten => ubuntu" do
     let(:facts) { {:operatingsystem => 'ubuntu', :concat_basedir => '/tmp', } }
-    it { should contain_class('nfs::server::debian') }
+    it { should contain_class('nfs::server::ubuntu') }
   end
   
   context "operatingsysten => ubuntu with params for mountd" do
@@ -23,7 +23,7 @@ describe 'nfs::server' do
     let(:params) {{ :mountd_port => '4711', :mountd_threads => '99' }}
     
     it do 
-     should contain_class('nfs::server::debian').with( 'mountd_port' => '4711', 'mountd_threads' => '99' )
+     should contain_class('nfs::server::ubuntu').with( 'mountd_port' => '4711', 'mountd_threads' => '99' )
     end
   end
   

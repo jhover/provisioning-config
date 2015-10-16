@@ -3,10 +3,6 @@
 
 class nfs::client::redhat::service {
 
-  Service {
-    require => Class['nfs::client::redhat::configure']
-  }
-
 # lint:ignore:selector_inside_resource  would not add much to readability
 
   service {'nfslock':
@@ -36,7 +32,6 @@ class nfs::client::redhat::service {
       },
     }
   }
-
 
   if $::nfs::client::redhat::params::osmajor == 6 or $::nfs::client::redhat::params::osmajor == 7 {
     service {'rpcbind':

@@ -77,8 +77,7 @@ define nfs::client::mount (
       atboot   => $atboot,
       require  => [
         Nfs::Mkdir[$_mount],
-        # Removed to avoid graph loop
-        #Class['::nfs::client'],
+        Class['::nfs::client'],
       ],
     }
 

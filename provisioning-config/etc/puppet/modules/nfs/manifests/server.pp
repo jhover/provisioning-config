@@ -13,9 +13,13 @@
 #   Export root, where we bind mount shares, default /export
 #
 # [nfs_v4_idmap_domain]
-#  Domain setting for idmapd, must be the same across server
-#  and clients.
-#  Default is to use $domain fact.
+#   Domain setting for idmapd, must be the same across server
+#   and clients.
+#   Default is to use $domain fact.
+#
+# [service_manage]
+#   Should this class manage the services behind nfs? Set this to false
+#   if you are managing the service in another way (e.g. pacemaker).
 #
 # === Examples
 #
@@ -29,10 +33,12 @@
 #  }
 
 class nfs::server (
-  $nfs_v4 = $nfs::params::nfs_v4,
+  $nfs_v4                       = $nfs::params::nfs_v4,
   $nfs_v4_export_root           = $nfs::params::nfs_v4_export_root,
   $nfs_v4_export_root_clients   = $nfs::params::nfs_v4_export_root_clients,
   $nfs_v4_idmap_domain          = $nfs::params::nfs_v4_idmap_domain,
+  #
+  $service_manage               = true,
   #
   $nfs_v4_root_export_ensure    = 'mounted',
   $nfs_v4_root_export_mount     = undef,
@@ -42,17 +48,29 @@ class nfs::server (
   $nfs_v4_root_export_bindmount = undef,
   $nfs_v4_root_export_tag       = undef,
   #
-  $mountd_port                   = undef,
-  $mountd_threads                = 1
+  $mountd_port                  = undef,
+  $mountd_threads               = 1,
+  #
+  $exports                      = undef,
 ) inherits nfs::params {
+
+  validate_bool($nfs_v4)
+  validate_bool($service_manage)
+  validate_bool($nfs_v4_root_export_remounts)
+  validate_bool($nfs_v4_root_export_atboot)
 
   class { "nfs::server::${::nfs::params::osfamily}":
     nfs_v4              => $nfs_v4,
     nfs_v4_idmap_domain => $nfs_v4_idmap_domain,
     mountd_port         => $mountd_port,
     mountd_threads      => $mountd_threads,
+    service_manage      => $service_manage,
   }
 
   include nfs::server::configure
+
+  if $exports {
+    create_resources(nfs::server::export, $exports)
+  }
 
 }
