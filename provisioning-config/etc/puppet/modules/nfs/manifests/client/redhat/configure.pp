@@ -3,6 +3,7 @@
 
 class nfs::client::redhat::configure {
 
+  create_resources('nfs::client::mount',hiera_hash('nfs::client::mount'))
 
   if $nfs::client::redhat::nfs_v4 {
     augeas {
