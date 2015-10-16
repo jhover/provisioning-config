@@ -3,7 +3,7 @@ require 'spec_helper'
 describe 'nfs::client' do
   context "operatingsysten => ubuntu" do
     let(:facts) { {:operatingsystem => 'ubuntu', } }
-    it { should contain_class('nfs::client::debian') }
+    it { should contain_class('nfs::client::ubuntu') }
   end
   context "operatingsysten => debian" do
     let(:facts) { {:operatingsystem => 'debian', } }

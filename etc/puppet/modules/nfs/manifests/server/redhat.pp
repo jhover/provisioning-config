@@ -2,9 +2,10 @@ class nfs::server::redhat(
   $nfs_v4              = false,
   $nfs_v4_idmap_domain = undef,
   $mountd_port         = undef,
-  $mountd_threads      = 1
+  $mountd_threads      = 1,
+  $service_manage      = true,
 ) {
-  if ($::operatingsystemmajrelease == defined) and ($::operatingsystemmajrelease =~ /^7/) {
+  if $::operatingsystemmajrelease and $::operatingsystemmajrelease =~ /^7/ {
     $service_name = 'nfs-server'
   } else {
     $service_name = 'nfs'
@@ -23,7 +24,10 @@ class nfs::server::redhat(
       target   => '/etc/sysconfig/nfs',
       variable => 'MOUNTD_PORT',
       value    => $mountd_port,
-      notify   => Service[$service_name],
+    }
+
+    if $service_manage {
+      Shellvar['rpc-mount-options'] ~> Service[$service_name]
     }
   }
 

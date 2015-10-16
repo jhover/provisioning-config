@@ -1,3 +1,16 @@
+## 2015-10-16 - 1.7.0 (Feature/Bugfixe release)
+
+#### Features:
+
+- (cf2d4f5) #37 #41 add optinal parameter `exports` for class server
+- (70ea022) #42 add the ability to manage the services. See `service_manage`
+- (1117238) #43 speed up puppet parser validate tests
+
+#### Bugfixes:
+
+- (426ad8f) #27 #44 add special config for ubuntu to fix service name bug for idmapd
+- (f84c342) #45 ensure order of client class dependencies
+
 ## 2015-09-29 - 1.6.0 (Feature/Bugfixe release)
 
 #### Features:

@@ -7,7 +7,7 @@ describe 'nfs::server::redhat' do
       should contain_service('nfs').with( 'ensure' => 'running'  )
     end
   end
-  
+
   context "operatingsystemrelease => 7.1" do
     let(:facts) { {:operatingsystemrelease => '7.1', :operatingsystemmajrelease => '7'} }
     it do

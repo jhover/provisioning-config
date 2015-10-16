@@ -1,7 +1,7 @@
-class nfs::server::debian::service {
+class nfs::server::ubuntu::service {
 
-  if $nfs::server::debian::service_manage {
-    if $nfs::server::debian::nfs_v4 == true {
+  if $nfs::server::ubuntu::service_manage {
+    if $nfs::server::ubuntu::nfs_v4 == true {
       service {'nfs-kernel-server':
         ensure     => running,
         enable     => true,

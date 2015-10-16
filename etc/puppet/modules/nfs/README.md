@@ -333,6 +333,11 @@ Set up NFS server and exports. NFSv3 and NFSv4 supported.
 
 **Parameters within `nfs::server`:**
 
+#####`service_manage` (true)
+
+Should this class manage the services behind nfs? Set this to false
+if you are managing the service in another way (e.g. pacemaker).
+
 #####`nfs_v4` (optional)
 
 NFSv4 support. Will set up automatic bind mounts to export root.
@@ -346,6 +351,19 @@ Export root, where we bind mount shares, default /export
 
 Domain setting for idmapd, must be the same across server
 and clients. Default is to use $domain fact.
+
+#####`exports` (optional)
+
+If set, this attribute will be used to
+construct nfs::server::export resources. You can use you ENC or hiera to
+provide the hash of nfs::server::export resources definitions:
+
+```hiera
+nfs::server::exports:
+  /mnt/something:
+    ensure: mounted
+    clients: '*(fsid=0,ro,insecure,async,all_squash,no_subtree_check,mountpoint=/mnt/something)'
+```
 
 #####Examples
 
