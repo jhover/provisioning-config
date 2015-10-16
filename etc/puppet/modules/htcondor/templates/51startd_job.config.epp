@@ -1,11 +1,12 @@
 # This file is managed by Puppet - DO NOT EDIT!
 # Job environment config
+EXECUTE = <%= $htcondor::local_dir %>/execute
+
 <% if $htcondor::use_jobwrapper { -%>
 USER_JOB_WRAPPER = /usr/libexec/jobwrapper.sh
 <% } -%>
-EXECUTE = <%= $htcondor::local_dir %>/execute
 
-# Always use slots
+<% if $htcondor::use_slotusers { -%>
 STARTER_ALLOW_RUNAS_OWNER = False
 DEDICATED_EXECUTE_ACCOUNT_REGEXP = slot.+
 SLOT1_USER = slot1
@@ -40,7 +41,6 @@ SLOT29_USER = slot29
 SLOT30_USER = slot30
 SLOT31_USER = slot31
 SLOT32_USER = slot32
-
 SLOT1_1_USER = slot1
 SLOT1_2_USER = slot2
 SLOT1_3_USER = slot3
@@ -73,3 +73,4 @@ SLOT1_29_USER = slot29
 SLOT1_30_USER = slot30
 SLOT1_31_USER = slot31
 SLOT1_32_USER = slot32
+<% } -%>
