@@ -9,8 +9,7 @@ classes:
   - selinux
   - htcondor
   - accounts
-  - nfs::server
-  - nfs::client
+  - nfs
 
 # boogy-motd
 motd::use_hiera: 'true'
@@ -85,8 +84,8 @@ authorized_keys::rolesauth:
 # server
 #nfs::server::export: 
 #    /home/nfs:
-#         clients: "172.11.0.0/24(rw,insecure,async,no_root_squash) localhost(rw)"
-#         perms: "0777"
+#         allowed_hosts: '172.11.0.0/24'
+#         options: 'sync,rw,no_root_squash,no_subtree_check' 
          
 #echocat-nfs 
 # client
