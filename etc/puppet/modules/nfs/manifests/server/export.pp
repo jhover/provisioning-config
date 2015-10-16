@@ -1,71 +1,134 @@
-define nfs::server::export (
-  $v3_export_name = $name,
-  # Grab the final directory name in the given path and make it our default nfsv4 export name.
-  $v4_export_name = regsubst($name, '.*/([^/]+)/?$', '\1'),
-  $clients        = 'localhost(ro)',
-  $bind           = 'rbind',
-  $owner          = 'root',
-  $group          = 'root',
-  $perms          = '0755',
-  # globals for this share
-  # propogated to storeconfigs
-  $ensure         = 'mounted',
-  $mount          = undef,
-  $remounts       = false,
-  $atboot         = false,
-  $options        = '_netdev',
-  $bindmount      = undef,
-  $nfstag         = undef,
-  $server         = $::clientcert) {
-  if $nfs::server::nfs_v4 {
-    nfs::server::export::nfs_v4::bindmount { $name:
-      ensure         => $ensure,
-      v4_export_name => $v4_export_name,
-      bind           => $bind,
-      owner          => $owner,
-      group          => $group,
-      perms          => $perms,
+# File::      <tt>nfs-server-export.pp</tt>
+# Author::    Sebastien Varrette (<Sebastien.Varrette@uni.lu>)
+# Copyright:: Copyright (c) 2011 Sebastien Varrette (www[http://varrette.gforge.uni.lu])
+# License::   GPLv3
+# ------------------------------------------------------------------------------
+# = Defines: nfs::server::export
+#
+# This definition configure a specific directory to be exported by the NFS server
+#
+# == Pre-requisites
+#
+# * The class 'nfs::server' should have been instanciated
+#
+# == Parameters:
+#
+# [*ensure*]
+#   default to 'present', can be 'absent'.
+#   Default: 'present'
+#
+# [*allowed_hosts*]
+#   Specification of the hosts which can mount this exported directory.
+#   Default: '*'
+#
+# [*content*]
+#  Specify the contents of the export entry as a string. Newlines, tabs,
+#  and spaces can be specified using the escaped syntax (e.g., \n for a newline)
+#
+# [*source*]
+#  Copy a file as the content of the export entry.
+#  Uses checksum to determine when a file should be copied.
+#  Valid values are either fully qualified paths to files, or URIs. Currently
+#  supported URI types are puppet and file.
+#
+# [*comment*]
+#  An optional comment to add on top of the export entry
+#
+# [*order*]
+#  Set the order of the export entry (typically between 10 and 90).
+#  Default: 50
+#
+# [*options*]
+#  the option for the export .
+#  Default: 'sync,rw,no_root_squash,no_subtree_check'
+#
+# == Requires:
+#
+# n/a
+#
+# == Sample Usage:
+#
+#     include 'nfs::server'
+#
+#      nfs::server::export { '/exports/homedirs':
+#          ensure        => 'present',
+#          comment       => 'Homedir of cluster users',
+#          allowed_hosts => '192.168.200.0/24',
+#      }
+#
+#    The above setting will result in the following configuration of the
+#    /etc/exports file:
+#
+#    [...]
+#    #### Homedir of cluster users
+#    /exports/homedirs      192.168.200.0/24(sync,rw,no_root_squash,no_subtree_check)
+#
+# == Warnings
+#
+# /!\ Always respect the style guide available
+# here[http://docs.puppetlabs.com/guides/style_guide]
+#
+# [Remember: No empty lines between comments and class definition]
+#
+define nfs::server::export(
+    $ensure        = 'present',
+    $content       = '',
+    $source        = '',
+    $order         = '50',
+    $options       = 'sync,rw,no_root_squash,no_subtree_check',
+    $allowed_hosts = '*',
+    $comment       = ''
+)
+{
+    notify { 'Running nfs::server::export': withpath => true } 
+    include nfs::params
+
+    # $name is provided by define invocation and is should be set to the
+    # directory path
+    $dirname = $name
+    notify { 'Dirname is ${dirname} ': withpath => true } 
+
+    if ! ($ensure in [ 'present', 'absent' ]) {
+        fail("nfs::server::export 'ensure' parameter must be set to either 'absent', or 'present'")
+    }
+    if ($nfs::server::ensure != $ensure) {
+        if ($nfs::server::ensure != 'present') {
+            fail("Cannot configure the NFS export directory '${dirname}' as nfs::server::ensure is NOT set to present (but ${nfs::server::ensure})")
+        }
     }
 
-    nfs::server::export::configure { "${nfs::server::nfs_v4_export_root}/${v4_export_name}":
-      ensure  => $ensure,
-      clients => $clients,
-      require => Nfs::Server::Export::Nfs_v4::Bindmount[$name]
+    if ($ensure == 'present') {
+        notify { 'Processing for export_entry...': withpath => true }
+        concat::fragment { "${nfs::params::exportsfile}_${dirname}":
+            ensure => $ensure,
+            target => $nfs::params::exportsfile,
+            order  => $order,
+            notify => Service['nfs-server'],
+        }
+
+        # if content is passed, use that, else if source is passed use that
+        if ($content == '' and $source != '') {
+            Concat::Fragment["${nfs::params::exportsfile}_${dirname}"] { source  => $source  }
+        } elsif ($content != '' and $source == '') {
+            Concat::Fragment["${nfs::params::exportsfile}_${dirname}"] { content => $content }
+        } else {
+            $allowed_hosts_array = flatten([$allowed_hosts])
+            Concat::Fragment["${nfs::params::exportsfile}_${dirname}"] { content => template('nfs/export_entry.erb') }
+        }
+
+    }
+    if ( (! defined(File[$dirname])) and  ($ensure == 'present')) {
+        exec { "mkdir -p ${dirname}":
+            path   => [ '/bin', '/usr/bin' ],
+            unless => "test -d ${dirname}",
+        }
+        file { $dirname:
+            ensure  => 'directory',
+            owner   => 'root',
+            group   => 'root',
+            mode    => '0777',
+            require => Exec["mkdir -p ${dirname}"]
+        }
     }
 
-    @@nfs::client::mount { "shared ${v4_export_name} by ${::clientcert}":
-      ensure    => $ensure,
-      mount     => $mount,
-      remounts  => $remounts,
-      atboot    => $atboot,
-      options   => $options,
-      bindmount => $bindmount,
-      nfstag    => $nfstag,
-      share     => $v4_export_name,
-      server    => $server,
-    }
-
-  } else {
-    nfs::server::export::configure { $v3_export_name:
-      ensure  => $ensure,
-      clients => $clients,
-    }
-
-    if $mount == undef {
-      $_mount = $v3_export_name
-    } else {
-      $_mount = $mount
-    }
-
-    @@nfs::client::mount { "shared ${v3_export_name} by ${::clientcert}":
-      ensure   => $ensure,
-      mount    => $_mount,
-      remounts => $remounts,
-      atboot   => $atboot,
-      options  => $options,
-      nfstag   => $nfstag,
-      share    => $v3_export_name,
-      server   => $server,
-    }
-  }
 }
