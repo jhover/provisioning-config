@@ -19,12 +19,17 @@ CLAIM_WORKLIFE = 3600
 JOB_RENICE_INCREMENT=0
 GSI_DELEGATION_KEYBITS = 1024
 
+<% if $htcondor::use_dedicated_scheduler { -%>
+DedicatedScheduler = "DedicatedScheduler@$htcondor::dedicated_scheduler"
+STARTD_ATTRS = $(STARTD_ATTRS), DedicatedScheduler
+RANK      = Scheduler =?= $(DedicatedScheduler)
+<% } -%>
+
 # Network setup. Use shared port. 
 UPDATE_COLLECTOR_WITH_TCP = True
 UPDATE_INTERVAL = 30
 CCB_ADDRESS = $(COLLECTOR_HOST)
 PRIVATE_NETWORK_NAME = localdomain
-
 
 
 
