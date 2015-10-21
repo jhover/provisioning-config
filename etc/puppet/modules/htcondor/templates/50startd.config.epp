@@ -23,6 +23,9 @@ GSI_DELEGATION_KEYBITS = 1024
 DedicatedScheduler = "DedicatedScheduler@<%= $htcondor::dedicated_scheduler %>"
 STARTD_ATTRS = $(STARTD_ATTRS), DedicatedScheduler
 RANK      = Scheduler =?= $(DedicatedScheduler)
+MPI_CONDOR_RSH_PATH = $(LIBEXEC)
+CONDOR_SSHD = /usr/sbin/sshd
+CONDOR_SSH_KEYGEN = /usr/bin/ssh-keygen
 <% } -%>
 
 # Network setup. Use shared port. 
