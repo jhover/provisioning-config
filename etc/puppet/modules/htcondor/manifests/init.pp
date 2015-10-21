@@ -27,20 +27,22 @@
 # 
 #
 
-class htcondor ( $is_execute        = false,
-	             $is_submit         = false,
-	             $is_manager        = false,
-	             $use_password_auth = true,
-	             $use_gsi_auth      = false,
-	             $condor_password   = 'changeme',
-	             $collector_host    = $::fqdn,
-	             $collector_port    = 9618,
+class htcondor ( $is_execute               = false,
+	             $is_submit                = false,
+	             $is_manager               = false,
+	             $use_password_auth        = true,
+	             $use_gsi_auth             = false,
+	             $condor_password          = 'changeme',
+	             $collector_host           = $::fqdn,
+	             $collector_port           = 9618,
 	             $randomize_collector_port = false,
-                 $collector_port_low = 29661,
-	             $collector_port_high = 29680,
-	             $local_dir         = '/home/condor',
-	             $use_jobwrapper    = true,
-	             $use_slotusers     = true,
+                 $collector_port_low       = 29661,
+	             $collector_port_high      = 29680,
+	             $local_dir                = '/home/condor',
+	             $use_jobwrapper           = true,
+	             $use_slotusers            = true,
+	             $use_dedicated_scheduler  = false,
+	             $dedicated_scheduler      = $::fqdn
 	             
 	            ) {
     $major_release = $::operatingsystemmajrelease
