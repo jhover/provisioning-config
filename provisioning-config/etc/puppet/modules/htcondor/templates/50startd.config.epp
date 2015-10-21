@@ -20,7 +20,7 @@ JOB_RENICE_INCREMENT=0
 GSI_DELEGATION_KEYBITS = 1024
 
 <% if $htcondor::use_dedicated_scheduler { -%>
-DedicatedScheduler = "DedicatedScheduler@$htcondor::dedicated_scheduler"
+DedicatedScheduler = "DedicatedScheduler@<%= $htcondor::dedicated_scheduler %>"
 STARTD_ATTRS = $(STARTD_ATTRS), DedicatedScheduler
 RANK      = Scheduler =?= $(DedicatedScheduler)
 <% } -%>
