@@ -442,6 +442,16 @@ def movemountmirrorvolgroup():
     runtimedcommand(cmd)
     log.info("Done.")        
 
+def mountraid():
+    global log
+    devname = "/dev/md0" 
+    log.info("Mounting %s at /home..." % devname)
+    cmd = 'mount -t ext4 %s /home' % devname
+    r = runtimedcommand(cmd)
+    if r is None:
+        raise MHMountException("Mount of %s failed." % devname)    
+    log.info("Mounted %s at /home..." % devname)
+
 def runtimedcommand(command):
     global log
     before = time.time()
