@@ -413,6 +413,7 @@ def movemountmirror(pinfo):
     if not os.path.isdir("/home.orig"):
         log.info("/home.orig doesn't exist, moving /home...")  
         os.rename("/home", "/home.orig")
+        os.mkdir("/home")
     else:
         log.info("/home.orig already exists.")
     # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
@@ -430,6 +431,7 @@ def movemountmirrorvolgroup():
     if not os.path.isdir("/home.orig"):  
         log.info("/home.orig doesn't exist, moving /home...")  
         os.rename("/home", "/home.orig")
+        os.mkdir("/home")
     else:
         log.info("/home.orig already exists.")
     # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
