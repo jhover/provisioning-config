@@ -89,7 +89,8 @@ class htcondor ( $is_execute               = false,
             ensure  => directory,
             owner   => 'condor',
             group   => 'condor',
-            recurse => true,
+            mode  => '0775',
+            recurse => false,
         }    
                     
         file {'/etc/condor/config.d/50startd.config':
