@@ -330,6 +330,7 @@ def mountvolgroup():
     # If raid partition already exists, mount it. 
     try:
         os.mkdir("/home")
+        os.chown("/home",0,0)
     except OSError:
         pass
     # First try to mount volume..
@@ -349,6 +350,7 @@ def mountdisk(pinfo):
     #    
     try:
         os.mkdir("/home")
+        os.chown("/home",0,0)
     except OSError:
         pass
     # First try to mount volume..
@@ -414,6 +416,7 @@ def movemountmirror(pinfo):
         log.info("/home.orig doesn't exist, moving /home...")  
         os.rename("/home", "/home.orig")
         os.mkdir("/home")
+        os.chown("/home",0,0)
     else:
         log.info("/home.orig already exists.")
     # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
@@ -421,7 +424,7 @@ def movemountmirror(pinfo):
     # So we want to mount and re-populate.
     mountdisk(pinfo)
     log.info("Copying content from")
-    cmd = "cp -avr /home.orig/* /home"
+    cmd = "cp -avr /home.orig/* /home/"
     runtimedcommand(cmd)
     log.info("Done.")    
 
