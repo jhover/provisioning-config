@@ -8,18 +8,6 @@
 #  Eliminate / partition from candidates
 #  Exit if /home is already mounted as a separate partition
 #
-#
-#   Cloudinit directives to create striped merged partition. 
-#
-# -  [sh, -c, "for letter in f g; do parted -s -a optimal /dev/xvd$letter ; done;"]
-#-  [sh, -c, "for letter in f g; do parted -s -a optimal /dev/xvd$letter mklabel gpt; done;"]
-#-  [sh, -c, "for letter in f g; do parted -a optimal /dev/xvd$letter mkpart primary 0% 100%;done;"] 
-#-  [sh, -c, "mdadm --create --verbose /dev/md0 --level=stripe --raid-devices=2  /dev/xvdf1 /dev/xvdg1;"]
-#-  mkfs.ext4 /dev/md0;
-#-  [sh, -c, "mount -t ext4 /dev/md0 /s3cache_ssd;"]
-#-  [sh, -c, "fusermount -u /mnt/atlasuserdisk;fusermount -u /mnt/atlasproddisk; fusermount -u /mnt/atlasdatadisk;"]
-#-  mount -a;
-#
 
 import logging
 import os
@@ -28,11 +16,9 @@ import sys
 import time
 import urllib
 
-
 # Globals
 logfile="/var/log/mounthome.log"
 log = None
-
 
 class MHMountException(Exception):
     def __init__(self, value):
@@ -149,7 +135,7 @@ def mounthome():
          
         log.info("Selecting candidate.")
         best = selectdevices(blockdevs)
-        
+               
         if len(best) > 1:
             log.info("Found multiple (%d) candidate(s) %s. Make volgroup..." % (len(best), best) )
             handlevolgroup(best)
@@ -177,6 +163,16 @@ def handlevolgroup(best):
     movemountmirrorvolgroup()
     log.info("Done")
 
+def choosefstype():
+    '''
+      Default to ext4, unless xfs utilities are installed. 
+    '''
+    global log
+    fst = 'ext4'
+    if os.path.exists('/usr/sbin/mkfs.xfs'):
+        fst = 'xfs'
+    log.debug("Chose filesystem type %s" % fst)
+    return fst
 
 def getblockdevs():
     global log
@@ -316,14 +312,16 @@ def selectdevices(devlist):
 def formatdisk(pinfo):
     # mkfs.ext3 -F -L home /dev/$VD
     devname = "/dev/%s" % pinfo.name
-    cmd = "mkfs.ext4 -F -L home %s" % devname
+    fst = choosefstype()
+    cmd = "mkfs.%s -F -L home %s" % (fst, devname)
     runtimedcommand(cmd)
 
 
 def formatvolgroup():
     # mkfs.ext3 -F -L home /dev/$VD
     time.sleep(2)
-    cmd = "mkfs.ext4 -F -L home /dev/md0" 
+    fst = choosefstype()
+    cmd = "mkfs.%s -F -L home /dev/md0" % fst 
     runtimedcommand(cmd)
 
 def mountvolgroup():
@@ -337,7 +335,8 @@ def mountvolgroup():
     devname = "/dev/md0"    
     #devname = "/dev/%s" % pinfo.name
     log.info("Mounting %s at /home..." % devname)
-    cmd = 'mount -t ext4 %s /home' % devname
+    fst = choosefstype()
+    cmd = 'mount -t %s %s /home' % (fst, devname)
     r = runtimedcommand(cmd)
     if r is None:
         raise MHMountException("Mount of %s failed." % devname)
@@ -357,13 +356,14 @@ def mountdisk(pinfo):
     devname = "dev/md0"    
     #devname = "/dev/%s" % pinfo.name
     log.info("Mounting %s at /home..." % devname)
-    cmd = 'mount -t ext4 %s /home' % devname
+    fst = choosefstype()
+    cmd = 'mount -t %s %s /home' % (fst, devname)
     r = runtimedcommand(cmd)
     # Then try pinfo
     if r is None:
         devname = "/dev/%s" % pinfo.name
         log.info("Mounting %s at /home..." % devname)
-        cmd = 'mount -t ext4 %s /home' % devname
+        cmd = 'mount -t %s %s /home' % (fst, devname)
         r = runtimedcommand(cmd)  
     if r is None:
         raise MHMountException("Mount of %s failed." % devname)    
@@ -451,7 +451,8 @@ def mountraid():
     global log
     devname = "/dev/md0" 
     log.info("Mounting %s at /home..." % devname)
-    cmd = 'mount -t ext4 %s /home' % devname
+    fst = choosefstype()
+    cmd = 'mount -t %s %s /home' % (fst, devname)
     r = runtimedcommand(cmd)
     if r is None:
         raise MHMountException("Mount of %s failed." % devname)    
