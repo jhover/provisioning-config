@@ -17,8 +17,8 @@ define accounts::user(
   $home = undef,
   $home_permissions = $::osfamily ? {
                         'Debian' => '0755',
-                        'RedHat' => '0700',
-                        default  => '0700',
+                        'RedHat' => '0755',
+                        default  => '0755',
                       },
   $ensure = present,
   $recurse_permissions = false,
