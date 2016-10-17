@@ -321,7 +321,10 @@ def formatvolgroup():
     # mkfs.ext3 -F -L home /dev/$VD
     time.sleep(2)
     fst = choosefstype()
-    cmd = "mkfs.%s -F -L home /dev/md0" % fst 
+    if fst == 'ext4':
+        cmd = "mkfs.%s -F -L home /dev/md0" % fst 
+    elif fst == 'xfs':
+        cmd = "mkfs.%s -f -L home /dev/md0" % fst
     runtimedcommand(cmd)
 
 def mountvolgroup():
