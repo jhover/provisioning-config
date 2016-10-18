@@ -313,7 +313,10 @@ def formatdisk(pinfo):
     # mkfs.ext3 -F -L home /dev/$VD
     devname = "/dev/%s" % pinfo.name
     fst = choosefstype()
-    cmd = "mkfs.%s -F -L home %s" % (fst, devname)
+    if fst == 'ext4':  
+        cmd = "mkfs.%s -F -L home %s" % (fst, devname)
+    elif fst == 'xfs':
+        cmd = "mkfs.%s -f -L home %s" % (fst, devname)
     runtimedcommand(cmd)
 
 
