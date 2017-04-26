@@ -20,7 +20,7 @@ init_files = ['etc/init.d/%s' %file for file in os.listdir('etc/init.d') if os.p
 
 setup(
     name="provisioning-config",
-    version='0.9.52',
+    version='0.9.53',
     description='VM-based configuration resources.',
     long_description='''VM-based configuration resources.''',
     license='GPL',

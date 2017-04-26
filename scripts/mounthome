@@ -240,10 +240,8 @@ def getblockinfo():
 
 
 def checklvm(devlist):
-    #
     # runs pvdisplay and sets has_child to True on block devices with
     # LVM volumes on them...
-    #
     global log
     cmd = 'pvdisplay -c'
     out = runtimedcommand(cmd)
