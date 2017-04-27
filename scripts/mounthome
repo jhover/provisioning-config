@@ -426,6 +426,7 @@ def movemountmirror(pinfo):
     # If there is /home.orig, it means mounthome has run before, and the node has rebooted. 
     # So it may no longer have the original ephemeral partion. 
     # So we want to mount and re-populate.
+    unmount_auto()
     mountdisk(pinfo)
     log.info("Copying content from")
     cmd = "cp -avr /home.orig/* /home/"
